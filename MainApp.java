@@ -1,5 +1,8 @@
 // Copyright Eric Chauvin 2019.
 
+// Java I/O tutorial.
+// https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html
+
 
 // black, blue, cyan, darkGray, gray, green, lightGray,
 // magenta, orange, pink, red, white, yellow.
@@ -45,11 +48,17 @@ import javax.swing.JScrollPane;
 
 public class MainApp implements Runnable
   {
-  public static final String VersionDate = "6/26/2019";
+  public static final String versionDate = "6/26/2019";
   private Font mainFont;
   private JTabbedPane mainTabbedPane;
   private JFrame mainFrame;
   private JLabel statusLabel;
+  private JTextArea statusTextArea;
+  private EditorTabPage[] tabPagesArray;
+  private int tabPagesArrayLast = 0;
+  private String showProjectText = "";
+  private String searchText = "";
+  private String statusFileName = "";
 
 
 
@@ -57,10 +66,25 @@ public class MainApp implements Runnable
     {
     // A static method in this class is creating
     // an instance of this class.
+    try
+    {
     MainApp mApp = new MainApp();
 
+    // java.lang.Exception
+    // throw new Exception( "This message" );
+    
     // In the event queue.
     SwingUtilities.invokeLater( mApp );
+
+    }
+    catch( Exception e )
+      {
+      // Do something....
+      // String e.getMessage()
+      }
+    // finally
+    //  {
+    //  }
     }
 
 
@@ -77,8 +101,12 @@ public class MainApp implements Runnable
 
   public void setupMainFrame()
     {
+    // checkSingleInstance()
+
+    tabPagesArray = new EditorTabPage[2];
+
     mainFrame = new JFrame( "Code Editor" );
-    mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 45 );
+    mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
 
     mainFrame.setDefaultCloseOperation(
                      WindowConstants.EXIT_ON_CLOSE );
@@ -92,6 +120,11 @@ public class MainApp implements Runnable
     // mainFrame.setExtendedState( JFrame.MAXIMIZED_BOTH );
 
     setupMenus();
+
+    showStatus( "Programming by Eric Chauvin." );
+    showStatus( "Version date: " + versionDate );
+
+    showStatus( "Appending this." );
 
     // Center it.
     mainFrame.setLocationRelativeTo( null );
@@ -143,15 +176,84 @@ public class MainApp implements Runnable
 
     mainPanel.add( mainTabbedPane );
 
+    addStatusTextPane();
 
-    addTextPane( "The tab's title" );
-    addTextPane( "Tab 2" );
+    addTextPane( "The tab's title", "FileName" );
+    addTextPane( "Tab 2", "FileName" );
+    addTextPane( "Tab 3", "FileName" );
+    addTextPane( "Tab 4", "FileName" );
     }
 
 
 
 
-  private void addTextPane( String tabTitle )
+
+  public void showStatus( String toShow )
+    {
+    statusTextArea.append( toShow + "\n" );
+    }
+
+
+
+  public void clearStatus()
+    {
+    statusTextArea.setText( "" );
+    }
+
+
+
+  private void addStatusTextPane()
+    {
+    // tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
+
+    statusTextArea = new JTextArea();
+    statusTextArea.setFont( mainFont );
+    statusTextArea.setLineWrap( true );
+    statusTextArea.setWrapStyleWord( true );
+    statusTextArea.setBackground( Color.black );
+    statusTextArea.setForeground( Color.white );
+
+    JScrollPane scrollPane1 = new JScrollPane( statusTextArea );
+
+    scrollPane1.setVerticalScrollBarPolicy(
+             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
+
+    // scrollPane1.setBackground( Color.red );
+    // scrollPane1.setForeground( Color.red );
+
+    mainTabbedPane.addTab( "Status", null, scrollPane1 ); 
+                          // , "Tool tip." );
+
+    EditorTabPage newPage = new EditorTabPage( this,
+                                               "Status",
+                                               statusFileName,
+                                               statusTextArea );
+
+    tabPagesArray[tabPagesArrayLast] = newPage;
+    // ProjectConfigFile.SetString( "RecentFile" + TabPagesArrayLast.ToString(), FileName, true );
+    tabPagesArrayLast++;
+
+    if( tabPagesArrayLast >= tabPagesArray.length )
+      {
+      tabPagesArray = resizeTabPagesArray( tabPagesArray, 16 );
+      }
+    }
+
+
+
+  public EditorTabPage[] resizeTabPagesArray( EditorTabPage[] in, int sizeToAdd )
+    {
+    EditorTabPage[] newArray = new EditorTabPage[in.length + sizeToAdd];
+    int max = in.length;
+    for( int count = 0; count < max; count++ )
+      newArray[count] = in[count];
+
+    return newArray;
+    }
+
+
+
+  private void addTextPane( String tabTitle, String fileName )
     {
     // tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
 
@@ -177,7 +279,21 @@ public class MainApp implements Runnable
     mainTabbedPane.addTab( tabTitle, null, scrollPane1,
                       "Tool tip." );
 
+    EditorTabPage newPage = new EditorTabPage( this,
+                                               tabTitle,
+                                               fileName,
+                                               textArea1 );
+
+    tabPagesArray[tabPagesArrayLast] = newPage;
+    // ProjectConfigFile.SetString( "RecentFile" + TabPagesArrayLast.ToString(), FileName, true );
+    tabPagesArrayLast++;
+
+    if( tabPagesArrayLast >= tabPagesArray.length )
+      {
+      tabPagesArray = resizeTabPagesArray( tabPagesArray, 16 );
+      }
     }
+
 
 
 
@@ -229,6 +345,24 @@ public class MainApp implements Runnable
     mainFrame.setJMenuBar( menuBar );
     }
 
+
+
+/*
+  private void SaveAllFiles()
+    {
+    if( TabPagesArrayLast < 1 )
+      return;
+
+    for( int Count = 1; Count < TabPagesArrayLast; Count++ )
+      {
+      TabPagesArray[Count].WriteToTextFile();
+      string FileName = TabPagesArray[Count].FileName;
+      ProjectConfigFile.SetString( "RecentFile" + Count.ToString(), FileName, false );
+      }
+
+    ProjectConfigFile.WriteToTextFile();
+    }
+*/
 
 
 
