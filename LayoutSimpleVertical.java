@@ -12,24 +12,13 @@ import java.awt.Rectangle;
 
 public class LayoutSimpleVertical implements LayoutManager
   {
-  private Container target;
   public static final int FixedHeightMax = 1000000;
 
 
 
-  public LayoutSimpleVertical( Container target )
+  public LayoutSimpleVertical()
     {
-    this.target = target;
-    }
-
-
-
-  private void checkContainer( Container target )
-    {
-    if( this.target != target )
-      {
-      throw new AWTError( "LayoutSimple checkContainer() targets don't match." );
-      }
+    // 
     }
 
 
@@ -56,11 +45,10 @@ public class LayoutSimpleVertical implements LayoutManager
   public Dimension preferredLayoutSize( Container target )
     {
     // The preferred size that this returns is the size that
-    // it is now.
-
-    checkContainer( target );
-
+    // it is now.  It's not the total preferred size of the
+    // components it contains.
     Dimension targetSize = target.getSize();
+
     Insets insets = target.getInsets();
 
     targetSize.width = targetSize.width + insets.left + insets.right;
@@ -87,8 +75,6 @@ public class LayoutSimpleVertical implements LayoutManager
     // synchronized( this )
       // {
 
-    checkContainer( target );
-
     Dimension targetSize = target.getSize();
     Insets in = target.getInsets();
     targetSize.width -= in.left + in.right;
@@ -111,7 +97,7 @@ public class LayoutSimpleVertical implements LayoutManager
       int x = in.left;
       int height = pref.height;
       if( height >= FixedHeightMax )
-        height = leftOverHeight;
+        height = leftOverHeight; // Make it stretch to fit the container.
 
       int width = targetSize.width;
       c.setBounds( x, y, width, height );
