@@ -1,19 +1,15 @@
 // Copyright Eric Chauvin 2019.
 
-// Java I/O tutorial.
-// https://docs.oracle.com/javase/tutorial/essential/io/bytestreams.html
+
+
+
+// What directory is the program in?
+// Config file.
+
 
 
 // black, blue, cyan, darkGray, gray, green, lightGray,
 // magenta, orange, pink, red, white, yellow.
-
-    // Rectangle Rec = pane.getBounds();
-    // Rec.height
-    // Rec.width
-    // Rec.x
-    // Rec.y
-
-    // JButton b1 = new JButton( "A Button" );
 
 
 ///////////////////////////////
@@ -48,7 +44,7 @@ import javax.swing.JScrollPane;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "6/26/2019";
+  public static final String versionDate = "7/1/2019";
   private Font mainFont;
   private JTabbedPane mainTabbedPane;
   private JFrame mainFrame;
@@ -66,25 +62,10 @@ public class MainApp implements Runnable
     {
     // A static method in this class is creating
     // an instance of this class.
-    try
-    {
     MainApp mApp = new MainApp();
 
-    // java.lang.Exception
-    // throw new Exception( "This message" );
-    
-    // In the event queue.
+    // It goes in the event queue.
     SwingUtilities.invokeLater( mApp );
-
-    }
-    catch( Exception e )
-      {
-      // Do something....
-      // String e.getMessage()
-      }
-    // finally
-    //  {
-    //  }
     }
 
 
@@ -124,8 +105,6 @@ public class MainApp implements Runnable
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + versionDate );
 
-    showStatus( "Appending this." );
-
     // Center it.
     mainFrame.setLocationRelativeTo( null );
     mainFrame.setVisible( true );
@@ -136,10 +115,10 @@ public class MainApp implements Runnable
 
   private void addComponentsToMainFrame( Container pane )
     {
-    pane.setLayout( new LayoutSimpleVertical( pane ));
+    pane.setLayout( new LayoutSimpleVertical());
 
     JPanel mainPanel = new JPanel();
-    mainPanel.setLayout( new LayoutSimpleVertical( mainPanel ));
+    mainPanel.setLayout( new LayoutSimpleVertical());
     mainPanel.setBackground( Color.black );
     // Setting it to FixedHeightMax means this component is
     // stretchable.
@@ -150,12 +129,11 @@ public class MainApp implements Runnable
     pane.add( mainPanel );
 
     JPanel bottomPanel = new JPanel();
-    bottomPanel.setLayout( new LayoutSimpleVertical( bottomPanel ));
+    bottomPanel.setLayout( new LayoutSimpleVertical());
     bottomPanel.setBackground( Color.black );
     bottomPanel.setPreferredSize( new Dimension( 1, 74 ));
     pane.add( bottomPanel );
 
-    // String "[" + minimum + "," + preferred + "," + maximum + "]@" + alignment;
     statusLabel = new JLabel( " Label with numbers to see." );
     statusLabel.setForeground( Color.white );
     statusLabel.setFont( mainFont );
@@ -168,7 +146,7 @@ public class MainApp implements Runnable
 // magenta, orange, pink, red, white, yellow.
 
     mainTabbedPane = new JTabbedPane();
-    mainTabbedPane.setBackground( Color.cyan );
+    mainTabbedPane.setBackground( Color.gray );
     mainTabbedPane.setForeground( Color.black );
     mainTabbedPane.setFont( mainFont );
     mainTabbedPane.setPreferredSize( new Dimension(
@@ -183,7 +161,6 @@ public class MainApp implements Runnable
     addTextPane( "Tab 3", "FileName" );
     addTextPane( "Tab 4", "FileName" );
     }
-
 
 
 
@@ -204,8 +181,6 @@ public class MainApp implements Runnable
 
   private void addStatusTextPane()
     {
-    // tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-
     statusTextArea = new JTextArea();
     statusTextArea.setFont( mainFont );
     statusTextArea.setLineWrap( true );
@@ -218,11 +193,7 @@ public class MainApp implements Runnable
     scrollPane1.setVerticalScrollBarPolicy(
              JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
 
-    // scrollPane1.setBackground( Color.red );
-    // scrollPane1.setForeground( Color.red );
-
-    mainTabbedPane.addTab( "Status", null, scrollPane1 ); 
-                          // , "Tool tip." );
+    mainTabbedPane.addTab( "Status", null, scrollPane1 );
 
     EditorTabPage newPage = new EditorTabPage( this,
                                                "Status",
@@ -243,10 +214,21 @@ public class MainApp implements Runnable
 
   public EditorTabPage[] resizeTabPagesArray( EditorTabPage[] in, int sizeToAdd )
     {
-    EditorTabPage[] newArray = new EditorTabPage[in.length + sizeToAdd];
+    EditorTabPage[] newArray;
+    try
+    {
+    newArray = new EditorTabPage[in.length + sizeToAdd];
     int max = in.length;
     for( int count = 0; count < max; count++ )
       newArray[count] = in[count];
+
+    }
+    catch( Exception e )
+      {
+      showStatus( "Couldn't allocate a new array for the EditorTabPage array." );
+      showStatus( e.getMessage() );
+      return in;
+      }
 
     return newArray;
     }
@@ -255,8 +237,6 @@ public class MainApp implements Runnable
 
   private void addTextPane( String tabTitle, String fileName )
     {
-    // tabbedPane.setMnemonicAt(0, KeyEvent.VK_1);
-
     JTextArea textArea1 = new JTextArea();
     textArea1.setFont( mainFont );
     textArea1.setLineWrap( false );
@@ -273,9 +253,6 @@ public class MainApp implements Runnable
     scrollPane1.setVerticalScrollBarPolicy(
              JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
 
-    // scrollPane1.setBackground( Color.red );
-    // scrollPane1.setForeground( Color.red );
-
     mainTabbedPane.addTab( tabTitle, null, scrollPane1,
                       "Tool tip." );
 
@@ -283,6 +260,8 @@ public class MainApp implements Runnable
                                                tabTitle,
                                                fileName,
                                                textArea1 );
+
+    newPage.ReadFromTextFile();
 
     tabPagesArray[tabPagesArrayLast] = newPage;
     // ProjectConfigFile.SetString( "RecentFile" + TabPagesArrayLast.ToString(), FileName, true );
@@ -367,3 +346,4 @@ public class MainApp implements Runnable
 
 
   }
+
