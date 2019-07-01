@@ -1,9 +1,21 @@
 // Copyright Eric Chauvin 2019.
 
 
+// Highlight colors?
+// https://docs.oracle.com/javase/7/docs/api/javax/swing/JTextArea.html
+
+
+// https://docs.oracle.com/javase/tutorial/essential/io/index.html
+
+
+// https://docs.oracle.com/javase/tutorial/essential/io/
+
+
+// static int parseInt(String s)
+
+
 
 import javax.swing.JTextArea;
-
 
 
 
@@ -27,57 +39,47 @@ import javax.swing.JTextArea;
     fileName = setFileName;
     tabTitle = setTabTitle;
     mainTextArea = setTextArea;
-    // ReadFromTextFile( fileName, true );
     }
 
 
 
 
-
-/*
-  private bool ReadFromTextFile( string FileName, bool AsciiOnly )
+  public void ReadFromTextFile()
     {
     try
     {
-    if( !File.Exists( FileName ))
+    String fileS = FileUtility.ReadAsciiFileToString( mApp,
+                                                      fileName );
+
+    if( fileS == "" )
       {
-      // Might be adding a new file that doesn't
-      // exist yet.
-      MainTextBox.Text = "";
-      return false;
+      mainTextArea.setText( "" );
+      return;
       }
 
-    StringBuilder SBuilder = new StringBuilder();
-    using( StreamReader SReader = new StreamReader( FileName, Encoding.UTF8 ))
+    fileS = fileS.trim();
+    fileS = fileS + "\n";
+
+    StringBuilder sBuilder = new StringBuilder();
+    String[] lines = fileS.split( "\n" );
+    for( int count = 0; count < lines.length; count++ )
       {
-      while( SReader.Peek() >= 0 )
-        {
-        string Line = SReader.ReadLine();
-        if( Line == null )
-          continue;
-
-        Line = Line.Replace( "\t", "  " );
-        Line = StringsEC.GetCleanUnicodeString( Line, 4000, false );
-        Line = Line.TrimEnd(); // TrimStart()
-
-        // if( Line == "" )
-          // continue;
-
-        SBuilder.Append( Line + "\r\n" );
-        }
+      String oneLine = StringsUtility.trimEnd( lines[count] );
+      sBuilder.append( oneLine + "\n" );
       }
 
-    MainTextBox.Text = SBuilder.ToString();
-    return true;
+    mainTextArea.setText( sBuilder.toString() );
+    // mainTextArea.append( toShow + "\n" );
+
     }
-    catch( Exception Except )
+    catch( Exception e )
       {
-      MForm.ShowStatus( "Could not read the file: \r\n" + FileName );
-      MForm.ShowStatus( Except.Message );
-      return false;
+      mApp.showStatus( "Could not read the file: \n" + fileName );
+      mApp.showStatus( e.getMessage() );
       }
     }
-*/
+
+
 
 
 /*
