@@ -22,9 +22,9 @@ del *.class
 
 cls
 
-Javac -Xlint -Xstdout JavaBuild.log MainApp.java EditorTabPage.java LayoutSimpleVertical.java
+Javac -Xlint -Xstdout JavaBuild.log MainApp.java EditorTabPage.java LayoutSimpleVertical.java FileUtility.java StringsUtility.java
+
 
 type JavaBuild.log
 
 pause
-
