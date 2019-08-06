@@ -5,9 +5,9 @@ rem Compile Java files.
 
 SET JAVA_HOME="C:\Javajdk"
 SET JDK_HOME=%JAVA_HOME%
-SET JRE_HOME="C:\JavaJre"
+SET JRE_HOME="C:\Javajdk\jre"
 
-SET CLASSPATH=C:\Javajdk\lib;C:\JavaJre\lib;
+SET CLASSPATH=C:\Javajdk\lib;C:\Javajdk\jre\lib;
 SET PATH=%PATH%;%JAVA_HOME%\bin;
 
 
