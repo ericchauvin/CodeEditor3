@@ -2,19 +2,19 @@
 
 
 
+// https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
+
+
 
 // What directory is the program in?
 // Config file.
+// Execute a batch file?
 
 
-
-// black, blue, cyan, darkGray, gray, green, lightGray,
-// magenta, orange, pink, red, white, yellow.
 
 
 ///////////////////////////////
 // javax.media.j3d.Canvas3D
-// https://en.wikipedia.org/wiki/Java_3D
 //////////////////////////////
 
 
@@ -39,12 +39,18 @@ import java.awt.Color;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
+import javax.swing.JOptionPane;
+
+
+
+// black, blue, cyan, darkGray, gray, green, lightGray,
+// magenta, orange, pink, red, white, yellow.
 
 
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "7/1/2019";
+  public static final String versionDate = "8/7/2019";
   private Font mainFont;
   private JTabbedPane mainTabbedPane;
   private JFrame mainFrame;
@@ -55,6 +61,8 @@ public class MainApp implements Runnable
   private String showProjectText = "";
   private String searchText = "";
   private String statusFileName = "";
+  private MenuActions mActions;
+
 
 
 
@@ -83,6 +91,7 @@ public class MainApp implements Runnable
   public void setupMainFrame()
     {
     // checkSingleInstance()
+    mActions = new MenuActions( this );
 
     tabPagesArray = new EditorTabPage[2];
 
@@ -118,6 +127,7 @@ public class MainApp implements Runnable
     pane.setLayout( new LayoutSimpleVertical());
 
     JPanel mainPanel = new JPanel();
+
     mainPanel.setLayout( new LayoutSimpleVertical());
     mainPanel.setBackground( Color.black );
     // Setting it to FixedHeightMax means this component is
@@ -146,8 +156,9 @@ public class MainApp implements Runnable
 // magenta, orange, pink, red, white, yellow.
 
     mainTabbedPane = new JTabbedPane();
-    mainTabbedPane.setBackground( Color.gray );
+    mainTabbedPane.setBackground( Color.green );
     mainTabbedPane.setForeground( Color.black );
+
     mainTabbedPane.setFont( mainFont );
     mainTabbedPane.setPreferredSize( new Dimension(
                          1, LayoutSimpleVertical.FixedHeightMax ));
@@ -156,7 +167,7 @@ public class MainApp implements Runnable
 
     addStatusTextPane();
 
-    addTextPane( "The tab's title", "FileName" );
+    addTextPane( "TestNotes.txt", "c:\\Eric\\CodeEditorJava\\TestNotes.txt" );
     addTextPane( "Tab 2", "FileName" );
     addTextPane( "Tab 3", "FileName" );
     addTextPane( "Tab 4", "FileName" );
@@ -187,6 +198,9 @@ public class MainApp implements Runnable
     statusTextArea.setWrapStyleWord( true );
     statusTextArea.setBackground( Color.black );
     statusTextArea.setForeground( Color.white );
+    statusTextArea.setCaretColor( Color.white );
+    statusTextArea.setSelectedTextColor( Color.black );
+    statusTextArea.setSelectionColor( Color.white );
 
     JScrollPane scrollPane1 = new JScrollPane( statusTextArea );
 
@@ -208,6 +222,10 @@ public class MainApp implements Runnable
       {
       tabPagesArray = resizeTabPagesArray( tabPagesArray, 16 );
       }
+
+    // mainTabbedPane.setBackgroundAt( 0, Color.red );
+    // setForegroundAt(int index, Color foreground)
+
     }
 
 
@@ -243,6 +261,10 @@ public class MainApp implements Runnable
     // textArea1.setWrapStyleWord( true );
     textArea1.setBackground( Color.black );
     textArea1.setForeground( Color.white );
+    textArea1.setCaretColor( Color.white );
+    textArea1.setSelectedTextColor( Color.black );
+    textArea1.setSelectionColor( Color.white );
+
     textArea1.setText( "The title is: " + tabTitle );
     // String getText();
     // selectAll()
@@ -261,7 +283,7 @@ public class MainApp implements Runnable
                                                fileName,
                                                textArea1 );
 
-    newPage.ReadFromTextFile();
+    newPage.readFromTextFile();
 
     tabPagesArray[tabPagesArrayLast] = newPage;
     // ProjectConfigFile.SetString( "RecentFile" + TabPagesArrayLast.ToString(), FileName, true );
@@ -282,42 +304,43 @@ public class MainApp implements Runnable
     JMenuBar menuBar = new JMenuBar();
     menuBar.setBackground( Color.black );
 
-    JMenu menu = new JMenu( "A Menu" );
-    menu.setMnemonic( KeyEvent.VK_A );
-    menu.setFont( mainFont );
-    menu.setForeground( Color.white );
-    menuBar.add( menu );
+    // File Menu:
+    JMenu fileMenu = new JMenu( "File" );
+    fileMenu.setMnemonic( KeyEvent.VK_F );
+    fileMenu.setFont( mainFont );
+    fileMenu.setForeground( Color.white );
+    menuBar.add( fileMenu );
 
-    JMenuItem menuItem = new JMenuItem( "A text-only menu item",
-                         KeyEvent.VK_T);
-
-    menuItem.setAccelerator( KeyStroke.getKeyStroke(
-        KeyEvent.VK_1, ActionEvent.ALT_MASK ));
+    JMenuItem menuItem = new JMenuItem( "Save All", KeyEvent.VK_A );
+    // menuItem.setAccelerator( KeyStroke.getKeyStroke(
+       // KeyEvent.VK_1, ActionEvent.ALT_MASK ));
+    menuItem.setActionCommand( "FileSaveAll" );
+    menuItem.addActionListener( mActions );
 
     menuItem.setForeground( Color.white );
-    menuItem.setBackground( Color.black );
+    // menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
-    menu.add( menuItem );
+    fileMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Second one." );
     menuItem.setMnemonic( KeyEvent.VK_B );
-    menu.add( menuItem );
+    fileMenu.add( menuItem );
 
-    // menu.addSeparator();
-    // JMenu submenu = new JMenu( "A submenu" );
-    // submenu.setMnemonic(KeyEvent.VK_S);
-    // menuItem = new JMenuItem("An item in the submenu");
-    // menuItem.setAccelerator(KeyStroke.getKeyStroke(
-    //     KeyEvent.VK_2, ActionEvent.ALT_MASK));
-    // submenu.add(menuItem);
+    // Edit Menu:
+    JMenu editMenu = new JMenu( "Edit" );
+    editMenu.setMnemonic( KeyEvent.VK_E );
+    menuBar.add( editMenu );
 
-    // menuItem = new JMenuItem("Another item");
-    // submenu.add(menuItem);
-    // menu.add(submenu);
 
-    menu = new JMenu("Another Menu");
-    menu.setMnemonic(KeyEvent.VK_N);
-    menuBar.add(menu);
+
+    // Help Menu:
+    JMenu helpMenu = new JMenu( "Help" );
+    editMenu.setMnemonic( KeyEvent.VK_H );
+    menuBar.add( helpMenu );
+
+    menuItem = new JMenuItem( "About" );
+    menuItem.setMnemonic( KeyEvent.VK_A );
+    fileMenu.add( menuItem );
 
     // System.exit( 0 );
 
@@ -326,24 +349,31 @@ public class MainApp implements Runnable
 
 
 
-/*
-  private void SaveAllFiles()
+
+  public void SaveAllFiles()
     {
-    if( TabPagesArrayLast < 1 )
+    // https://docs.oracle.com/javase/7/docs/api/javax/swing/JOptionPane.html
+    // https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
+
+    JOptionPane.showMessageDialog( mainFrame,
+                 "Save All was clicked." );
+
+    if( tabPagesArrayLast < 1 )
       return;
 
-    for( int Count = 1; Count < TabPagesArrayLast; Count++ )
+    for( int Count = 1; Count < tabPagesArrayLast; Count++ )
       {
-      TabPagesArray[Count].WriteToTextFile();
-      string FileName = TabPagesArray[Count].FileName;
-      ProjectConfigFile.SetString( "RecentFile" + Count.ToString(), FileName, false );
+      tabPagesArray[Count].writeToTextFile();
+
+      // string FileName = TabPagesArray[Count].FileName;
+      // ProjectConfigFile.SetString( "RecentFile" + Count.ToString(), FileName, false );
       }
 
-    ProjectConfigFile.WriteToTextFile();
+
+    // ProjectConfigFile.WriteToTextFile();
     }
-*/
+
 
 
 
   }
-
