@@ -1,20 +1,11 @@
 // Copyright Eric Chauvin 2019.
 
 
-// https://docs.oracle.com/javase/tutorial/essential/io/index.html
-
-
-    // Files.isReadable(Path)
-    // Files.isWritable(Path)
-    // Files.isExecutable(Path)
-    // Files.delete(Path)
-    // Files.copy(Path, Path, CopyOption...)
-    // Files.copy(source, target, REPLACE_EXISTING );
-
 
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +15,7 @@ import java.nio.file.Paths;
   public class FileUtility
   {
 
-  public static String ReadAsciiFileToString( MainApp mApp,
+  public static String readAsciiFileToString( MainApp mApp,
                                               String fileName )
     {
     try
@@ -38,7 +29,6 @@ import java.nio.file.Paths;
 
     byte[] fileArray;
     fileArray = Files.readAllBytes( path );
-    // .write( Path, byte[], OpenOption... )
 
     StringBuilder sBuilder = new StringBuilder();
 
@@ -77,6 +67,64 @@ import java.nio.file.Paths;
       mApp.showStatus( "Could not read the file: \n" + fileName );
       mApp.showStatus( e.getMessage() );
       return "";
+      }
+    }
+
+
+
+
+  public static boolean writeAsciiStringToFile( MainApp mApp,
+                                                String fileName,
+                                                String textS )
+    {
+    try
+    {
+    Path path = Paths.get( fileName );
+
+    char newline = '\n';
+    char space = ' ';
+    char tab = '\t';
+    StringBuilder sBuilder = new StringBuilder();
+    int max = textS.length();
+    for( int count = 0; count < max; count++ )
+      {
+      char sChar = textS.charAt( count );
+      if( sChar > 127 )
+        continue;
+
+      if( sChar == tab )
+        sChar = space;
+
+      if( sChar < space )
+        {
+        if( sChar != newline )
+          continue;
+
+        }
+
+      sBuilder.append( sChar );
+      }
+
+    String outString = sBuilder.toString();
+    char[] outCharArray = outString.toCharArray();
+    byte[] outBuffer = new byte[outCharArray.length];
+    max = outCharArray.length;
+    for( int count = 0; count < max; count++ )
+      {
+      outBuffer[count] = (byte)outCharArray[count];
+      }
+
+    Files.write( path, outBuffer,  StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING,
+                        StandardOpenOption.WRITE );
+
+    return true;
+    }
+    catch( Exception e )
+      {
+      mApp.showStatus( "Could not write to the file: \n" + fileName );
+      mApp.showStatus( e.getMessage() );
+      return false;
       }
     }
 
