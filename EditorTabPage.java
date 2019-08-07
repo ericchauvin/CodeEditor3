@@ -1,14 +1,6 @@
 // Copyright Eric Chauvin 2019.
 
 
-// Highlight colors?
-// https://docs.oracle.com/javase/7/docs/api/javax/swing/JTextArea.html
-
-
-// https://docs.oracle.com/javase/tutorial/essential/io/index.html
-
-
-// https://docs.oracle.com/javase/tutorial/essential/io/
 
 
 // static int parseInt(String s)
@@ -20,7 +12,7 @@ import javax.swing.JTextArea;
 
 
 
-  public class EditorTabPage
+public class EditorTabPage
   {
   private MainApp mApp;
   private String fileName = "";
@@ -44,11 +36,11 @@ import javax.swing.JTextArea;
 
 
 
-  public void ReadFromTextFile()
+  public void readFromTextFile()
     {
     try
     {
-    String fileS = FileUtility.ReadAsciiFileToString( mApp,
+    String fileS = FileUtility.readAsciiFileToString( mApp,
                                                       fileName );
 
     if( fileS == "" )
@@ -82,37 +74,26 @@ import javax.swing.JTextArea;
 
 
 
-/*
-  internal bool WriteToTextFile()
+
+  public void writeToTextFile()
     {
     try
     {
-    MForm.ShowStatus( "Saving: " + FileName );
+    mApp.showStatus( "Saving: " + fileName );
+    String outString = mainTextArea.getText();
 
-    using( StreamWriter SWriter = new StreamWriter( FileName, false, Encoding.UTF8 ))
-      {
-      string[] Lines = MainTextBox.Lines;
+    FileUtility.writeAsciiStringToFile( mApp,
+                                        fileName,
+                                        outString );
 
-      foreach( string Line in Lines )
-        {
-        // SWriter.WriteLine( Line.TrimEnd() + "\r\n" );
-        SWriter.WriteLine( Line.TrimEnd() );
-        }
-
-      // SWriter.WriteLine( " " );
-      }
-
-    return true;
     }
-    catch( Exception Except )
+    catch( Exception e )
       {
-      MForm.ShowStatus( "Could not write to the file:" );
-      MForm.ShowStatus( FileName );
-      MForm.ShowStatus( Except.Message );
-      return false;
+      mApp.showStatus( "Could not write to the file: \n" + fileName );
+      mApp.showStatus( e.getMessage() );
       }
     }
-*/
+
 
 
 
