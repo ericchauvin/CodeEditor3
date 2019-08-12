@@ -2,16 +2,6 @@
 
 
 
-// https://docs.oracle.com/javase/tutorial/uiswing/components/menu.html
-
-
-
-// What directory is the program in?
-// Config file.
-// Execute a batch file?
-
-
-
 
 ///////////////////////////////
 // javax.media.j3d.Canvas3D
@@ -40,6 +30,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 
 
 
@@ -50,8 +44,9 @@ import javax.swing.JOptionPane;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "8/7/2019";
+  public static final String versionDate = "8/12/2019";
   private Font mainFont;
+  private Font menuFont;
   private JTabbedPane mainTabbedPane;
   private JFrame mainFrame;
   private JLabel statusLabel;
@@ -97,6 +92,7 @@ public class MainApp implements Runnable
 
     mainFrame = new JFrame( "Code Editor" );
     mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
+    menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 50 );
 
     mainFrame.setDefaultCloseOperation(
                      WindowConstants.EXIT_ON_CLOSE );
@@ -307,40 +303,52 @@ public class MainApp implements Runnable
     // File Menu:
     JMenu fileMenu = new JMenu( "File" );
     fileMenu.setMnemonic( KeyEvent.VK_F );
-    fileMenu.setFont( mainFont );
+    fileMenu.setFont( menuFont );
     fileMenu.setForeground( Color.white );
     menuBar.add( fileMenu );
 
-    JMenuItem menuItem = new JMenuItem( "Save All", KeyEvent.VK_A );
+    JMenuItem menuItem = new JMenuItem( "Save All", KeyEvent.VK_L );
     // menuItem.setAccelerator( KeyStroke.getKeyStroke(
        // KeyEvent.VK_1, ActionEvent.ALT_MASK ));
     menuItem.setActionCommand( "FileSaveAll" );
     menuItem.addActionListener( mActions );
-
     menuItem.setForeground( Color.white );
-    // menuItem.setBackground( Color.black );
-    menuItem.setFont( mainFont );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
     fileMenu.add( menuItem );
 
-    menuItem = new JMenuItem( "Second one." );
-    menuItem.setMnemonic( KeyEvent.VK_B );
+    menuItem = new JMenuItem( "Open" );
+    menuItem.setMnemonic( KeyEvent.VK_O );
+    menuItem.setActionCommand( "FileOpen" );
+    menuItem.addActionListener( mActions );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
     fileMenu.add( menuItem );
 
     // Edit Menu:
     JMenu editMenu = new JMenu( "Edit" );
     editMenu.setMnemonic( KeyEvent.VK_E );
+    editMenu.setForeground( Color.white );
+    editMenu.setFont( menuFont );
     menuBar.add( editMenu );
-
 
 
     // Help Menu:
     JMenu helpMenu = new JMenu( "Help" );
-    editMenu.setMnemonic( KeyEvent.VK_H );
+    helpMenu.setMnemonic( KeyEvent.VK_H );
+    helpMenu.setForeground( Color.white );
+    helpMenu.setFont( menuFont );
     menuBar.add( helpMenu );
 
     menuItem = new JMenuItem( "About" );
     menuItem.setMnemonic( KeyEvent.VK_A );
-    fileMenu.add( menuItem );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "HelpAbout" );
+    menuItem.addActionListener( mActions );
+    helpMenu.add( menuItem );
 
     // System.exit( 0 );
 
@@ -352,12 +360,6 @@ public class MainApp implements Runnable
 
   public void SaveAllFiles()
     {
-    // https://docs.oracle.com/javase/7/docs/api/javax/swing/JOptionPane.html
-    // https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
-
-    JOptionPane.showMessageDialog( mainFrame,
-                 "Save All was clicked." );
-
     if( tabPagesArrayLast < 1 )
       return;
 
@@ -371,6 +373,48 @@ public class MainApp implements Runnable
 
 
     // ProjectConfigFile.WriteToTextFile();
+    }
+
+
+
+
+  public void OpenFile()
+    {
+    // https://docs.oracle.com/javase/tutorial/uiswing/components/filechooser.html
+    final JFileChooser fc = new JFileChooser();
+    // fc.setCurrentDirectory()
+
+    FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
+    fc.addChoosableFileFilter( filter );
+
+    int returnVal = fc.showOpenDialog( mainFrame );
+    if( returnVal != JFileChooser.APPROVE_OPTION )
+      return;
+
+    // Save Dialog:
+    // int returnVal = fc.showSaveDialog(FileChooserDemo.this);
+
+
+    // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
+    File file = fc.getSelectedFile();
+    String fileName = file.getName();
+    showStatus( "File name picked is: " + fileName );
+
+    String pathName = file.getPath();
+    showStatus( "Path name picked is: " + pathName );
+
+// https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
+
+    }
+
+
+
+
+  public void ShowAboutBox()
+    {
+    JOptionPane.showMessageDialog( mainFrame,
+                 "Programming by Eric Chauvin.  Version date: " + versionDate );
+
     }
 
 
