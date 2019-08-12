@@ -26,9 +26,20 @@ public class MenuActions implements ActionListener
     String command = e.getActionCommand();
     mApp.showStatus( "ActionEvent Command is: " + command );
 
+    if( command == "FileOpen" )
+      {
+      mApp.OpenFile();
+      }
+
     if( command == "FileSaveAll" )
       {
       mApp.SaveAllFiles();
+      }
+
+
+    if( command == "HelpAbout" )
+      {
+      mApp.ShowAboutBox();
       }
 
     }
