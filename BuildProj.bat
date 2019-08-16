@@ -22,7 +22,9 @@ del *.class
 
 cls
 
-Javac -Xlint -Xstdout JavaBuild.log MainApp.java EditorTabPage.java LayoutSimpleVertical.java FileUtility.java StringsUtility.java MenuActions.java ConfigureFile.java StringDictionary.java FileTree.java
+rem Make something to build these separately.
+rem Like system( "javac whatever" ).
+Javac -Xlint -Xstdout JavaBuild.log MainApp.java EditorTabPage.java LayoutSimpleVertical.java FileUtility.java StringsUtility.java MenuActions.java ConfigureFile.java StringDictionary.java StringDictionaryLine.java FileTree.java
 
 type JavaBuild.log
 
