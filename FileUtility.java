@@ -73,12 +73,18 @@ import java.nio.file.Paths;
 
 
 
-  public static boolean writeAsciiStringToFile( MainApp mApp,
+  public static void writeAsciiStringToFile( MainApp mApp,
                                                 String fileName,
                                                 String textS )
     {
     try
     {
+    if( textS == null )
+      return;
+
+    if( textS.trim().length() < 1 )
+      return;
+
     Path path = Paths.get( fileName );
 
     char newline = '\n';
@@ -106,6 +112,12 @@ import java.nio.file.Paths;
       }
 
     String outString = sBuilder.toString();
+    if( outString == null )
+      return;
+
+    if( outString.trim().length() < 1 )
+      return;
+
     char[] outCharArray = outString.toCharArray();
     byte[] outBuffer = new byte[outCharArray.length];
     max = outCharArray.length;
@@ -118,13 +130,11 @@ import java.nio.file.Paths;
                         StandardOpenOption.TRUNCATE_EXISTING,
                         StandardOpenOption.WRITE );
 
-    return true;
     }
     catch( Exception e )
       {
       mApp.showStatus( "Could not write to the file: \n" + fileName );
       mApp.showStatus( e.getMessage() );
-      return false;
       }
     }
 
