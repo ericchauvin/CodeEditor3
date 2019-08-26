@@ -1,12 +1,9 @@
 // Copyright Eric Chauvin 2019.
 
 
-// https://docs.oracle.com/javase/7/docs/api/java/lang/String.html
-// https://docs.oracle.com/javase/7/docs/api/java/lang/Character.html
 
-
-// There is nothing in here that says keys have to be
-// in lower case.
+// See notes in StringDictionary about this being
+// case-sensitive.
 
 
 public class StringDictionaryLine
@@ -61,7 +58,7 @@ public class StringDictionaryLine
 
 
 
-  private void sortArrays()
+  public void sort()
     {
     if( arrayLast < 2 )
       return;
@@ -87,7 +84,8 @@ public class StringDictionaryLine
     boolean switched = false;
     for( int count = 0; count < (arrayLast - 1); count++ )
       {
-      if( keyArray[count].compareTo(
+      // compareTo() uses case.
+      if( keyArray[count].compareToIgnoreCase(
                               keyArray[count + 1] ) > 0 )
         {
         int temp = sortIndexArray[count];
@@ -109,6 +107,7 @@ public class StringDictionaryLine
 
     for( int count = 0; count < arrayLast; count++ )
       {
+      // compareTo() uses case.
       if( keyArray[count].compareTo( key ) == 0 )
         return count;
 
@@ -150,5 +149,27 @@ public class StringDictionaryLine
 
 
 
-  }
+  public String makeKeysValuesString()
+    {
+    if( arrayLast < 1 )
+      return "";
 
+    StringBuilder sBuilder = new StringBuilder();
+
+    for( int count = 0; count < arrayLast; count++ )
+      {
+      // Using the sortIndexArray for the sorted order.
+      String oneLine = keyArray[sortIndexArray[count]] +
+                       "\t" +
+                       valueArray[sortIndexArray[count]] +
+                       "\n";
+
+      sBuilder.append( oneLine );
+      }
+
+    return sBuilder.toString();
+    }
+
+
+
+  }
