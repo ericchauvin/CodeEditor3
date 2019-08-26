@@ -35,13 +35,20 @@ public class EditorTabPage
 
 
 
+  public String getFileName()
+    {
+    return fileName;
+    }
+
+
 
   public void readFromTextFile()
     {
     try
     {
     String fileS = FileUtility.readAsciiFileToString( mApp,
-                                                      fileName );
+                                                      fileName,
+                                                      false );
 
     if( fileS == "" )
       {
@@ -84,7 +91,8 @@ public class EditorTabPage
 
     FileUtility.writeAsciiStringToFile( mApp,
                                         fileName,
-                                        outString );
+                                        outString,
+                                        false );
 
     }
     catch( Exception e )
