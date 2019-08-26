@@ -12,42 +12,28 @@ public class ConfigureFile
 
 
 
-  public ConfigureFile( String fileToUseName,  MainApp useApp )
+  public ConfigureFile( MainApp useApp, String fileToUseName )
     {
     mApp = useApp;
 
     fileName = fileToUseName;
-    strDictionary = new StringDictionary( false );
-
+    strDictionary = new StringDictionary( mApp, false );
     readFromTextFile();
     }
 
 
-/*
-  internal string GetString( string KeyWord )
+
+  public String getString( String keyWord )
     {
-    key = key.toLowerCase();
-
-
     keyWord = keyWord.trim().toLowerCase();
-    strDictionary.setString( keyWord, value );
-
-    strDictionary.getString( keyWord );
-
-    string Value;
-    if( CDictionary.TryGetValue( KeyWord, out Value ))
-      return Value;
-    else
-      return "";
-
+    return strDictionary.getString( keyWord );
     }
-*/
 
 
 
-
-  public void setString( String keyWord, String value,
-                                         boolean writeFile )
+  public void setString( String keyWord,
+                         String value,
+                         boolean writeFile )
     {
     if( keyWord == "" )
       {
@@ -55,6 +41,8 @@ public class ConfigureFile
       return;
       }
 
+    // The StringDictionary is not case-sensitive, but
+    // this makes all keys lower case.
     keyWord = keyWord.trim().toLowerCase();
     strDictionary.setString( keyWord, value );
 
@@ -66,15 +54,19 @@ public class ConfigureFile
 
 
 
-
-  private void readFromTextFile()
+  public void readFromTextFile()
     {
     try
     {
+    mApp.showStatus( "Reading: " + fileName );
     strDictionary.clear();
 
     String fileS = FileUtility.readAsciiFileToString( mApp,
-                                                      fileName );
+                                                      fileName,
+                                                      true );
+
+    mApp.showStatus( "fileS: " + fileS );
+
     if( fileS.length() < 2 )
       return;
 
@@ -82,18 +74,24 @@ public class ConfigureFile
     for( int count = 0; count < lines.length; count++ )
       {
       String oneLine = lines[count];
+      mApp.showStatus( "oneLine: " + oneLine );
       if( oneLine.length() < 3 )  // key, tab, value.
         continue;
 
-      String[] lineParts = fileS.split( "\t" );
+      mApp.showStatus( "Before lineParts" );
+      String[] lineParts = oneLine.split( "\t" );
+      mApp.showStatus( "lineParts.length: " + lineParts.length );
+
       if( lineParts.length < 2 )
         continue;
 
+      mApp.showStatus( "Before key" );
       String key = lineParts[0].trim();
       if( key.length() < 1 )
         continue;
 
       String value = lineParts[1];
+      mApp.showStatus( "value: " + value );
       // KeyWord = KeyWord.Replace( "\"", "" );
       // Value = Value.Replace( "\"", "" );
 
@@ -115,23 +113,15 @@ public class ConfigureFile
     {
     try
     {
-    // mApp.showStatus( "Keys: " + keyS );
+    String fileStr = strDictionary.makeKeysValuesString();
+    mApp.showStatus( "fileStr: " + fileStr );
+    if( fileStr.trim().length() < 1 )
+      return;
 
-/*
-
-
-    using( StreamWriter SWriter = new StreamWriter( FileName, false, Encoding.UTF8 ))
-      {
-      foreach( KeyValuePair<string, string> Kvp in CDictionary )
-        {
-        string Line = Kvp.Key + "\t" + Kvp.Value;
-        // Line = AESEncrypt.EncryptString( Line );
-        SWriter.WriteLine( Line );
-        }
-
-      SWriter.WriteLine( " " );
-      }
-*/
+    FileUtility.writeAsciiStringToFile( mApp,
+                                        fileName,
+                                        fileStr,
+                                        true );
 
     }
     catch( Exception e )
@@ -172,4 +162,3 @@ public class ConfigureFile
 
 
   }
-
