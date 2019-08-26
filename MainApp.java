@@ -34,7 +34,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 // black, blue, cyan, darkGray, gray, green, lightGray,
@@ -44,7 +45,7 @@ import java.io.File;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "8/12/2019";
+  public static final String versionDate = "8/26/2019";
   private Font mainFont;
   private Font menuFont;
   private JTabbedPane mainTabbedPane;
@@ -57,17 +58,15 @@ public class MainApp implements Runnable
   private String searchText = "";
   private String statusFileName = "";
   private MenuActions mActions;
+  private ConfigureFile mainConfigFile;
+  private ConfigureFile projectConfigFile;
 
 
 
 
   public static void main( String[] args )
     {
-    // A static method in this class is creating
-    // an instance of this class.
     MainApp mApp = new MainApp();
-
-    // It goes in the event queue.
     SwingUtilities.invokeLater( mApp );
     }
 
@@ -86,6 +85,37 @@ public class MainApp implements Runnable
   public void setupMainFrame()
     {
     // checkSingleInstance()
+
+    // Pass this program's directory as a parameter from
+    // the batch file.
+    String programDirectory = "C:\\Eric\\CodeEditorJava\\";
+    String mainConfigFileName = programDirectory +
+                                      "MainConfigure.txt";
+
+    mainConfigFile = new ConfigureFile( this,
+                                mainConfigFileName );
+
+    String currentProjectFileName =
+            mainConfigFile.getString( "CurrentProjectFile" );
+
+    if( currentProjectFileName.length() < 4 )
+      {
+      currentProjectFileName = programDirectory +
+                                     "ProjectOptions.txt";
+
+      mainConfigFile.setString( "CurrentProjectFile",
+                                 currentProjectFileName,
+                                 true );
+
+      mainConfigFile.writeToTextFile();
+      }
+
+    projectConfigFile = new ConfigureFile( this,
+                             currentProjectFileName );
+
+    setShowProjectText();
+
+
     mActions = new MenuActions( this );
 
     tabPagesArray = new EditorTabPage[2];
@@ -106,6 +136,9 @@ public class MainApp implements Runnable
     // mainFrame.setExtendedState( JFrame.MAXIMIZED_BOTH );
 
     setupMenus();
+
+    projectConfigFile.readFromTextFile();
+    openRecentFiles();
 
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + versionDate );
@@ -162,11 +195,6 @@ public class MainApp implements Runnable
     mainPanel.add( mainTabbedPane );
 
     addStatusTextPane();
-
-    addTextPane( "TestNotes.txt", "c:\\Eric\\CodeEditorJava\\TestNotes.txt" );
-    addTextPane( "Tab 2", "FileName" );
-    addTextPane( "Tab 3", "FileName" );
-    addTextPane( "Tab 4", "FileName" );
     }
 
 
@@ -174,6 +202,9 @@ public class MainApp implements Runnable
 
   public void showStatus( String toShow )
     {
+    if( statusTextArea == null )
+      return;
+
     statusTextArea.append( toShow + "\n" );
     }
 
@@ -181,6 +212,9 @@ public class MainApp implements Runnable
 
   public void clearStatus()
     {
+    if( statusTextArea == null )
+      return;
+
     statusTextArea.setText( "" );
     }
 
@@ -300,6 +334,7 @@ public class MainApp implements Runnable
     JMenuBar menuBar = new JMenuBar();
     menuBar.setBackground( Color.black );
 
+    ///////////////////////
     // File Menu:
     JMenu fileMenu = new JMenu( "File" );
     fileMenu.setMnemonic( KeyEvent.VK_F );
@@ -326,6 +361,18 @@ public class MainApp implements Runnable
     menuItem.setFont( menuFont );
     fileMenu.add( menuItem );
 
+
+    menuItem = new JMenuItem( "Exit" );
+    menuItem.setMnemonic( KeyEvent.VK_X );
+    menuItem.setActionCommand( "FileExit" );
+    menuItem.addActionListener( mActions );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    fileMenu.add( menuItem );
+
+
+    ///////////////////////
     // Edit Menu:
     JMenu editMenu = new JMenu( "Edit" );
     editMenu.setMnemonic( KeyEvent.VK_E );
@@ -334,6 +381,25 @@ public class MainApp implements Runnable
     menuBar.add( editMenu );
 
 
+    ///////////////////////
+    // Project Menu:
+    JMenu projectMenu = new JMenu( "Project" );
+    projectMenu.setMnemonic( KeyEvent.VK_P );
+    projectMenu.setForeground( Color.white );
+    projectMenu.setFont( menuFont );
+    menuBar.add( projectMenu );
+
+    menuItem = new JMenuItem( "Set Current Project" );
+    menuItem.setMnemonic( KeyEvent.VK_C );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "ProjectSetCurrent" );
+    menuItem.addActionListener( mActions );
+    projectMenu.add( menuItem );
+
+
+    ///////////////////////
     // Help Menu:
     JMenu helpMenu = new JMenu( "Help" );
     helpMenu.setMnemonic( KeyEvent.VK_H );
@@ -350,7 +416,6 @@ public class MainApp implements Runnable
     menuItem.addActionListener( mActions );
     helpMenu.add( menuItem );
 
-    // System.exit( 0 );
 
     mainFrame.setJMenuBar( menuBar );
     }
@@ -358,34 +423,37 @@ public class MainApp implements Runnable
 
 
 
-  public void SaveAllFiles()
+  public void saveAllFiles()
     {
     if( tabPagesArrayLast < 1 )
       return;
 
-    for( int Count = 1; Count < tabPagesArrayLast; Count++ )
+    for( int count = 1; count < tabPagesArrayLast; count++ )
       {
-      tabPagesArray[Count].writeToTextFile();
+      tabPagesArray[count].writeToTextFile();
 
-      // string FileName = TabPagesArray[Count].FileName;
-      // ProjectConfigFile.SetString( "RecentFile" + Count.ToString(), FileName, false );
+      String fileName = tabPagesArray[count].getFileName();
+      showStatus( "Setting: " + fileName );
+
+      projectConfigFile.setString( "RecentFile" + count, fileName, false );
       }
 
-
-    // ProjectConfigFile.WriteToTextFile();
+    showStatus( "Saving project config file." );
+    projectConfigFile.writeToTextFile();
+    showStatus( "Saving main config file." );
+    mainConfigFile.writeToTextFile();
     }
 
 
 
 
-  public void OpenFile()
+  public void openFile()
     {
-    // https://docs.oracle.com/javase/tutorial/uiswing/components/filechooser.html
     final JFileChooser fc = new JFileChooser();
     // fc.setCurrentDirectory()
 
-    FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
-    fc.addChoosableFileFilter( filter );
+    // FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
+    // fc.addChoosableFileFilter( filter );
 
     int returnVal = fc.showOpenDialog( mainFrame );
     if( returnVal != JFileChooser.APPROVE_OPTION )
@@ -395,6 +463,7 @@ public class MainApp implements Runnable
     // int returnVal = fc.showSaveDialog(FileChooserDemo.this);
 
 
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
     // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
     File file = fc.getSelectedFile();
     String fileName = file.getName();
@@ -403,20 +472,58 @@ public class MainApp implements Runnable
     String pathName = file.getPath();
     showStatus( "Path name picked is: " + pathName );
 
-// https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
-
+    addTextPane( fileName, pathName );
     }
 
 
 
 
-  public void ShowAboutBox()
+  public void showAboutBox()
     {
     JOptionPane.showMessageDialog( mainFrame,
                  "Programming by Eric Chauvin.  Version date: " + versionDate );
 
     }
 
+
+
+  private void setShowProjectText()
+    {
+    String showS = projectConfigFile.getString( "ProjectDirectory" );
+
+    showS = showS.replace( "C:\\Eric\\", "" );
+    showProjectText = showS;
+    }
+
+
+
+  private void openRecentFiles()
+    {
+    showStatus( "Opening recent files." );
+
+    int howMany = 0;
+    for( int count = 1; count <= 30; count++ )
+      {
+      String fileName = projectConfigFile.getString(
+                                "RecentFile" + count );
+
+      if( fileName.length() < 1 )
+        break;
+
+      howMany++;
+      Path path = Paths.get( fileName );
+      File file = path.toFile();
+      String tabTitle = file.getName();
+      showStatus( "tabTitle is: " + tabTitle );
+
+      // String pathName = file.getPath();
+      // showStatus( "Path name picked is: " + pathName );
+
+      addTextPane( tabTitle, fileName );
+      }
+
+    showStatus( "Files opened: " + howMany );
+    }
 
 
 
