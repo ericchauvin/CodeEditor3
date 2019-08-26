@@ -21,25 +21,53 @@ public class MenuActions implements ActionListener
 
 
 
-  public void actionPerformed( ActionEvent e )
+  public void actionPerformed( ActionEvent event )
     {
-    String command = e.getActionCommand();
+    // For most things this will be the outside try-catch
+    // block.  In other words it catches anything not
+    // otherwise caught somewhere else.
+    try
+    {
+
+    String command = event.getActionCommand();
     mApp.showStatus( "ActionEvent Command is: " + command );
 
+    //////////////
+    // File Menu:
     if( command == "FileOpen" )
       {
-      mApp.OpenFile();
+      mApp.openFile();
       }
 
     if( command == "FileSaveAll" )
       {
-      mApp.SaveAllFiles();
+      mApp.saveAllFiles();
+      }
+
+    if( command == "FileExit" )
+      {
+      System.exit( 0 );
       }
 
 
+    /////////////
+    // Edit Menu:
+
+
+
+    //////////////
+    // Help Menu:
     if( command == "HelpAbout" )
       {
-      mApp.ShowAboutBox();
+      mApp.showAboutBox();
+      }
+
+
+    }
+    catch( Exception e )
+      {
+      mApp.showStatus( "Exception in MenuActions.actionPerformed()." );
+      mApp.showStatus( e.getMessage() );
       }
 
     }
