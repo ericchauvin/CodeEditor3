@@ -36,10 +36,7 @@ public class ConfigureFile
                          boolean writeFile )
     {
     if( keyWord == "" )
-      {
-      // MForm.ShowStatus( "Can't add an empty keyword to the dictionary in ConfigureFile.cs." );
       return;
-      }
 
     // The StringDictionary is not case-sensitive, but
     // this makes all keys lower case.
@@ -58,14 +55,11 @@ public class ConfigureFile
     {
     try
     {
-    mApp.showStatus( "Reading: " + fileName );
     strDictionary.clear();
 
     String fileS = FileUtility.readAsciiFileToString( mApp,
                                                       fileName,
                                                       true );
-
-    mApp.showStatus( "fileS: " + fileS );
 
     if( fileS.length() < 2 )
       return;
@@ -74,24 +68,18 @@ public class ConfigureFile
     for( int count = 0; count < lines.length; count++ )
       {
       String oneLine = lines[count];
-      mApp.showStatus( "oneLine: " + oneLine );
       if( oneLine.length() < 3 )  // key, tab, value.
         continue;
 
-      mApp.showStatus( "Before lineParts" );
       String[] lineParts = oneLine.split( "\t" );
-      mApp.showStatus( "lineParts.length: " + lineParts.length );
-
       if( lineParts.length < 2 )
         continue;
 
-      mApp.showStatus( "Before key" );
       String key = lineParts[0].trim();
       if( key.length() < 1 )
         continue;
 
       String value = lineParts[1];
-      mApp.showStatus( "value: " + value );
       // KeyWord = KeyWord.Replace( "\"", "" );
       // Value = Value.Replace( "\"", "" );
 
@@ -114,7 +102,7 @@ public class ConfigureFile
     try
     {
     String fileStr = strDictionary.makeKeysValuesString();
-    mApp.showStatus( "fileStr: " + fileStr );
+    // mApp.showStatus( "fileStr: " + fileStr );
     if( fileStr.trim().length() < 1 )
       return;
 
