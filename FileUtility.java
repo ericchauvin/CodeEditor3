@@ -16,7 +16,8 @@ import java.nio.file.Paths;
   {
 
   public static String readAsciiFileToString( MainApp mApp,
-                                              String fileName )
+                                              String fileName,
+                                              boolean keepTabs )
     {
     try
     {
@@ -44,15 +45,20 @@ import java.nio.file.Paths;
       {
       short sChar = Utility.ByteToShort( fileArray[count] );
 
-      if( sChar == tab )
-        sChar = space;
+      if( !keepTabs )
+        {
+        if( sChar == tab )
+          sChar = space;
+
+        }
 
       if( sChar > 127 )
         continue; // Don't want this character.
 
       if( sChar < space )
         {
-        if( sChar != newline )
+        if( !((sChar == newline) ||
+              (sChar == tab )))
           continue;
 
         }
@@ -74,8 +80,9 @@ import java.nio.file.Paths;
 
 
   public static void writeAsciiStringToFile( MainApp mApp,
-                                                String fileName,
-                                                String textS )
+                                             String fileName,
+                                             String textS,
+                                             boolean keepTabs )
     {
     try
     {
@@ -98,12 +105,17 @@ import java.nio.file.Paths;
       if( sChar > 127 )
         continue;
 
-      if( sChar == tab )
-        sChar = space;
+      if( !keepTabs )
+        {
+        if( sChar == tab )
+          sChar = space;
+
+        }
 
       if( sChar < space )
         {
-        if( sChar != newline )
+        if( !((sChar == newline) ||
+              (sChar == tab )))
           continue;
 
         }
