@@ -17,13 +17,11 @@ public class StringDictionary
   private MainApp mApp;
   private int keySize = 127;
   private StringDictionaryLine lineArray[];
-  // The ASCII value of the space character is 32.
-  private final int space = 32;
-  private final int BiggestAsciiValue = 127 - space;
-  private final int DoubleBiggestAsciiValue =
-               (BiggestAsciiValue << 7) + BiggestAsciiValue;
-  private final int smallKeySize = BiggestAsciiValue + 1;
-  private final int bigKeySize = DoubleBiggestAsciiValue + 1;
+  private final int maxIndexLetter = 'z' - 'a';
+  private final int smallKeySize = maxIndexLetter + 1;
+  private final int bigKeySize = ((maxIndexLetter << 6) |
+                                  maxIndexLetter) + 1;
+
 
 
 
@@ -56,52 +54,43 @@ public class StringDictionary
     }
 
 
+  // https://docs.oracle.com/javase/7/docs/api/java/lang/Character.html
+
+  private int letterToIndexNumber( char letter )
+    {
+    letter = Character.toLowerCase( letter );
+    int index = letter - 'a';
+    if( index < 0 )
+      index = 0;
+
+    if( index > maxIndexLetter )
+      index = maxIndexLetter;
+
+    return index;
+    }
+
+
 
   private int getIndex( String key )
     {
     // This index needs to be in sorted order.
-    // There will be empty gaps in this.  There are lots
-    // of different ways to optimize this one function
-    // so that it's done a lot more efficiently to
-    // avoid gaps.  But it depends on how you use it.
-    // Like if you are only going to use it for ASCII
-    // letters, etc.
 
     int keyLength = key.length();
     if( keyLength < 1 )
       return 0;
 
-    int one = key.charAt( 0 );
-    one -= space;
-    if( one < 0 )
-      one = 0;
-
-    // For most things in the United States the non-ASCII
-    // characters are pretty rare in text strings and so
-    // this just lumps any bigger characters in to one
-    // StringDictionaryLine at the end.
-    if( one > BiggestAsciiValue )
-      one = BiggestAsciiValue;
-
+    int one = letterToIndexNumber( key.charAt( 0 ));
     if( keyLength < 2 )
       return one;
 
     if( keySize == smallKeySize )
       return one;
 
-    int tempTwo = key.charAt( 1 );
-    tempTwo -= space;
-    if( tempTwo < 0 )
-      tempTwo = 0;
+    int tempTwo = letterToIndexNumber( key.charAt( 1 ));
+    int two = (one << 6) | tempTwo;
 
-    if( tempTwo > BiggestAsciiValue )
-      tempTwo = BiggestAsciiValue;
-
-    int two = one << 7;
-    two = two | tempTwo;
-
-    if( two > DoubleBiggestAsciiValue )
-      two = DoubleBiggestAsciiValue;
+    if( two >= bigKeySize )
+      two = bigKeySize - 1;
 
     return two;
     }
