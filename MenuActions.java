@@ -44,6 +44,11 @@ public class MenuActions implements ActionListener
       mApp.saveAllFiles();
       }
 
+    if( command == "FileCloseCurrent" )
+      {
+      mApp.closeCurrentFile();
+      }
+
     if( command == "FileExit" )
       {
       System.exit( 0 );
@@ -52,6 +57,12 @@ public class MenuActions implements ActionListener
 
     /////////////
     // Edit Menu:
+
+    if( command == "EditCopy" )
+      {
+      mApp.editCopy();
+      }
+
 
 
 
