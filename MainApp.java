@@ -45,7 +45,7 @@ import java.nio.file.Paths;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "8/26/2019";
+  public static final String versionDate = "8/28/2019";
   private Font mainFont;
   private Font menuFont;
   private JTabbedPane mainTabbedPane;
@@ -60,7 +60,7 @@ public class MainApp implements Runnable
   private MenuActions mActions;
   private ConfigureFile mainConfigFile;
   private ConfigureFile projectConfigFile;
-
+  private final int maximumTabsOpen = 30;
 
 
 
@@ -137,7 +137,6 @@ public class MainApp implements Runnable
 
     setupMenus();
 
-    projectConfigFile.readFromTextFile();
     openRecentFiles();
 
     showStatus( "Programming by Eric Chauvin." );
@@ -308,6 +307,14 @@ public class MainApp implements Runnable
     mainTabbedPane.addTab( tabTitle, null, scrollPane1,
                       "Tool tip." );
 
+    // getTabComponentAt(int index)
+    JLabel tabLabel = new JLabel( tabTitle );
+    tabLabel.setForeground( Color.black );
+    // It's transparent.  tabLabel.setBackground( Color.red );
+    tabLabel.setFont( mainFont );
+    mainTabbedPane.setTabComponentAt( tabPagesArrayLast,
+                                tabLabel );
+
     EditorTabPage newPage = new EditorTabPage( this,
                                                tabTitle,
                                                fileName,
@@ -342,7 +349,16 @@ public class MainApp implements Runnable
     fileMenu.setForeground( Color.white );
     menuBar.add( fileMenu );
 
-    JMenuItem menuItem = new JMenuItem( "Save All", KeyEvent.VK_L );
+    JMenuItem menuItem = new JMenuItem( "Open" );
+    menuItem.setMnemonic( KeyEvent.VK_O );
+    menuItem.setActionCommand( "FileOpen" );
+    menuItem.addActionListener( mActions );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    fileMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Save All", KeyEvent.VK_L );
     // menuItem.setAccelerator( KeyStroke.getKeyStroke(
        // KeyEvent.VK_1, ActionEvent.ALT_MASK ));
     menuItem.setActionCommand( "FileSaveAll" );
@@ -352,9 +368,10 @@ public class MainApp implements Runnable
     menuItem.setFont( menuFont );
     fileMenu.add( menuItem );
 
-    menuItem = new JMenuItem( "Open" );
-    menuItem.setMnemonic( KeyEvent.VK_O );
-    menuItem.setActionCommand( "FileOpen" );
+
+    menuItem = new JMenuItem( "Close Current" );
+    menuItem.setMnemonic( KeyEvent.VK_U );
+    menuItem.setActionCommand( "FileCloseCurrent" );
     menuItem.addActionListener( mActions );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
@@ -379,6 +396,15 @@ public class MainApp implements Runnable
     editMenu.setForeground( Color.white );
     editMenu.setFont( menuFont );
     menuBar.add( editMenu );
+
+    menuItem = new JMenuItem( "Copy" );
+    menuItem.setMnemonic( KeyEvent.VK_C );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "EditCopy" );
+    menuItem.addActionListener( mActions );
+    editMenu.add( menuItem );
 
 
     ///////////////////////
@@ -472,6 +498,14 @@ public class MainApp implements Runnable
     String pathName = file.getPath();
     showStatus( "Path name picked is: " + pathName );
 
+    if( fileIsInTabPages( pathName ))
+      {
+      JOptionPane.showMessageDialog( mainFrame,
+                 "The file is already in the tabs." );
+
+      return;
+      }
+
     addTextPane( fileName, pathName );
     }
 
@@ -499,10 +533,10 @@ public class MainApp implements Runnable
 
   private void openRecentFiles()
     {
-    showStatus( "Opening recent files." );
+    // showStatus( "Opening recent files." );
 
-    int howMany = 0;
-    for( int count = 1; count <= 30; count++ )
+    // int howMany = 0;
+    for( int count = 1; count <= maximumTabsOpen; count++ )
       {
       String fileName = projectConfigFile.getString(
                                 "RecentFile" + count );
@@ -510,11 +544,11 @@ public class MainApp implements Runnable
       if( fileName.length() < 1 )
         break;
 
-      howMany++;
+      // howMany++;
       Path path = Paths.get( fileName );
       File file = path.toFile();
       String tabTitle = file.getName();
-      showStatus( "tabTitle is: " + tabTitle );
+      // showStatus( "tabTitle is: " + tabTitle );
 
       // String pathName = file.getPath();
       // showStatus( "Path name picked is: " + pathName );
@@ -522,7 +556,211 @@ public class MainApp implements Runnable
       addTextPane( tabTitle, fileName );
       }
 
-    showStatus( "Files opened: " + howMany );
+    // showStatus( "Files opened: " + howMany );
+    }
+
+
+
+  private boolean fileIsInTabPages( String fileName )
+    {
+    for( int count = 0; count < tabPagesArrayLast; count++ )
+      {
+      String fileAtTab = tabPagesArray[count].getFileName();
+      if( fileAtTab.compareToIgnoreCase( fileName ) == 0 )
+        return true;
+
+      }
+
+    return false;
+    }
+
+
+
+  public void closeCurrentFile()
+    {
+    try
+    {
+    // Don't save anything automatically.
+    // saveAllFiles();
+
+    if( tabPagesArrayLast < 2 )
+      return;
+
+    // getTabCount()
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( selectedIndex < 1 )
+      return;
+
+    if( selectedIndex >= tabPagesArrayLast )
+      return;
+
+    // Clear all RecentFile entries.
+    for( int count = 1; count <= maximumTabsOpen; count++ )
+      projectConfigFile.setString( "RecentFile" + count, "", false );
+
+    int where = 1;
+    for( int count = 1; count < tabPagesArrayLast; count++ )
+      {
+      if( count == selectedIndex )
+        continue;
+
+      String fileName = tabPagesArray[count].getFileName();
+      projectConfigFile.setString( "RecentFile" + where, fileName, false );
+      where++;
+      }
+
+    projectConfigFile.writeToTextFile();
+
+    mainTabbedPane.removeAll();
+    tabPagesArrayLast = 0;
+    addStatusTextPane();
+    openRecentFiles();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in closeCurrentFile()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+
+
+/*
+  private void setCurrentProjectToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    string FileToOpen = "";
+
+    try
+    {
+    // Get this starting directory name from a confifiguration
+    // file or something.
+    FileToOpen = OpenFileNameDialog( "C:\\Eric", "*.txt" );
+    if( FileToOpen.Length < 1 )
+      return;
+
+    if( !FileToOpen.ToLower().Contains( ".txt" ))
+      {
+      MessageBox.Show( "This should be a .txt file: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    // MessageBox.Show( "File to open: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
+
+    if( !File.Exists( FileToOpen ))
+      {
+      MessageBox.Show( "The file does not exist: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    MainTabControl.TabPages.Clear();
+    TabPagesArrayLast = 0;
+    AddStatusPage();
+
+    string ProjectFileName = FileToOpen;
+
+    if( ProjectFileName.Length < 4 )
+      {
+      MessageBox.Show( "Pick a file in the Project directory.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    MainConfigFile.SetString( "CurrentProjectFile", ProjectFileName, true );
+
+    ProjectConfigFile = new ConfigureFile( ProjectFileName, this );
+
+    string WorkingDir = ProjectFileName;
+    WorkingDir = Path.GetDirectoryName( WorkingDir );
+   ProjectConfigFile.SetString( "ProjectDirectory", WorkingDir, false );
+
+    OpenRecentFiles();
+
+    // string BuildBatchFileName = ProjectConfigFile.GetString( "BuildBatchFile" );
+
+    SetShowProjectText();
+
+    }
+    catch( Exception Except )
+      {
+      string ShowS = "Exception with opening project file.\r\n" +
+                     "Entered: " + FileToOpen + "\r\n" +
+                     Except.Message;
+
+      MessageBox.Show( ShowS, MessageBoxTitle, MessageBoxButtons.OK );
+      }
+    }
+*/
+
+
+
+  private JTextArea getSelectedTextArea()
+    {
+    if( tabPagesArrayLast < 2 )
+      return null;
+
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( selectedIndex < 1 )
+      return null;
+
+    if( selectedIndex >= tabPagesArrayLast )
+      return null;
+
+    JTextArea selectedTextArea = tabPagesArray[
+                       selectedIndex].getTextArea();
+
+    return selectedTextArea;
+    }
+
+
+
+  // https://docs.oracle.com/javase/tutorial/uiswing/components/text.html
+  // https://docs.oracle.com/javase/7/docs/api/javax/swing/JTextArea.html
+
+  public void editCopy()
+    {
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      return;
+=======
+
+
+    if( SelectedBox.SelectionLength < 1 )
+      return;
+
+    SelectedBox.Copy();
+
+    // .Paste();
+    // If SelectionLength is not zero this will paste
+    // over (replace) the current selection.
+    }
+
+
+
+  private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    TextBox SelectedBox = GetSelectedTextBox();
+    if( SelectedBox == null )
+      return;
+
+    if( SelectedBox.SelectionLength < 1 )
+      return;
+
+    SelectedBox.Cut();
+    }
+
+
+
+  private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    TextBox SelectedBox = GetSelectedTextBox();
+    if( SelectedBox == null )
+      return;
+
+    // if( SelectedBox.SelectionLength < 1 )
+      // return;
+
+    SelectedBox.SelectAll();
     }
 
 
