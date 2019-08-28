@@ -3,10 +3,6 @@
 
 
 
-// static int parseInt(String s)
-
-
-
 import javax.swing.JTextArea;
 
 
@@ -40,6 +36,12 @@ public class EditorTabPage
     return fileName;
     }
 
+
+
+  public JTextArea getTextArea()
+    {
+    return mainTextArea;
+    }
 
 
   public void readFromTextFile()
