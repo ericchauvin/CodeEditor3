@@ -51,7 +51,7 @@ public class ConfigureFile
 
 
 
-  public void readFromTextFile()
+  private void readFromTextFile()
     {
     try
     {
