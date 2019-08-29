@@ -63,7 +63,20 @@ public class MenuActions implements ActionListener
       mApp.editCopy();
       }
 
+    if( command == "EditCut" )
+      {
+      mApp.editCut();
+      }
 
+    if( command == "EditPaste" )
+      {
+      mApp.editPaste();
+      }
+
+    if( command == "EditSelectAll" )
+      {
+      mApp.editSelectAll();
+      }
 
 
     //////////////
