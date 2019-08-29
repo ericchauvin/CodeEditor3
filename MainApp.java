@@ -36,6 +36,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
 
 
 // black, blue, cyan, darkGray, gray, green, lightGray,
@@ -45,7 +47,7 @@ import java.nio.file.Paths;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "8/28/2019";
+  public static final String versionDate = "8/29/2019";
   private Font mainFont;
   private Font menuFont;
   private JTabbedPane mainTabbedPane;
@@ -58,9 +60,11 @@ public class MainApp implements Runnable
   private String searchText = "";
   private String statusFileName = "";
   private MenuActions mActions;
+  private TimerActions tActions;
   private ConfigureFile mainConfigFile;
   private ConfigureFile projectConfigFile;
   private final int maximumTabsOpen = 30;
+  // private Timer keyboardTimer;
 
 
 
@@ -117,12 +121,13 @@ public class MainApp implements Runnable
 
 
     mActions = new MenuActions( this );
+    tActions = new TimerActions( this );
 
     tabPagesArray = new EditorTabPage[2];
 
     mainFrame = new JFrame( "Code Editor" );
     mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
-    menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 50 );
+    menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 46 );
 
     mainFrame.setDefaultCloseOperation(
                      WindowConstants.EXIT_ON_CLOSE );
@@ -141,6 +146,8 @@ public class MainApp implements Runnable
 
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + versionDate );
+
+    setupTimer();
 
     // Center it.
     mainFrame.setLocationRelativeTo( null );
@@ -291,12 +298,14 @@ public class MainApp implements Runnable
     textArea1.setBackground( Color.black );
     textArea1.setForeground( Color.white );
     textArea1.setCaretColor( Color.white );
-    textArea1.setSelectedTextColor( Color.black );
-    textArea1.setSelectionColor( Color.white );
+    textArea1.setSelectedTextColor( Color.white );
+    textArea1.setSelectionColor( Color.darkGray );
+// black, blue, cyan, darkGray, gray, green, lightGray,
+// magenta, orange, pink, red, white, yellow.
 
-    textArea1.setText( "The title is: " + tabTitle );
+
+    // textArea1.setText( "The title is: " + tabTitle );
     // String getText();
-    // selectAll()
     // append( String )
 
     JScrollPane scrollPane1 = new JScrollPane( textArea1 );
@@ -406,6 +415,35 @@ public class MainApp implements Runnable
     menuItem.addActionListener( mActions );
     editMenu.add( menuItem );
 
+    menuItem = new JMenuItem( "Cut" );
+    menuItem.setMnemonic( KeyEvent.VK_T );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "EditCut" );
+    menuItem.addActionListener( mActions );
+    editMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Paste" );
+    menuItem.setMnemonic( KeyEvent.VK_P );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "EditPaste" );
+    menuItem.addActionListener( mActions );
+    editMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Select All" );
+    menuItem.setMnemonic( KeyEvent.VK_A );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "EditSelectAll" );
+    menuItem.addActionListener( mActions );
+    editMenu.add( menuItem );
+
+
+// =======
 
     ///////////////////////
     // Project Menu:
@@ -714,55 +752,92 @@ public class MainApp implements Runnable
 
 
 
+// ========
   // https://docs.oracle.com/javase/tutorial/uiswing/components/text.html
   // https://docs.oracle.com/javase/7/docs/api/javax/swing/JTextArea.html
 
   public void editCopy()
     {
+    try
+    {
     JTextArea selectedTextArea = getSelectedTextArea();
     if( selectedTextArea == null )
       return;
-=======
 
-
-    if( SelectedBox.SelectionLength < 1 )
-      return;
-
-    SelectedBox.Copy();
-
-    // .Paste();
-    // If SelectionLength is not zero this will paste
-    // over (replace) the current selection.
+    selectedTextArea.copy();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in editCopy()." );
+      showStatus( e.getMessage() );
+      }
     }
 
 
 
-  private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+  public void editCut()
     {
-    TextBox SelectedBox = GetSelectedTextBox();
-    if( SelectedBox == null )
-      return;
-
-    if( SelectedBox.SelectionLength < 1 )
-      return;
-
-    SelectedBox.Cut();
-    }
-
-
-
-  private void selectAllToolStripMenuItem_Click(object sender, EventArgs e)
+    try
     {
-    TextBox SelectedBox = GetSelectedTextBox();
-    if( SelectedBox == null )
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
       return;
 
-    // if( SelectedBox.SelectionLength < 1 )
-      // return;
-
-    SelectedBox.SelectAll();
+    selectedTextArea.cut();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in editCut()." );
+      showStatus( e.getMessage() );
+      }
     }
 
+
+
+  public void editPaste()
+    {
+    try
+    {
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      return;
+
+    selectedTextArea.paste();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in editPaste()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+  public void editSelectAll()
+    {
+    try
+    {
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      return;
+
+    selectedTextArea.selectAll();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in editSelectAll()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+  private void setupTimer()
+    {
+    int delay = 1000; //milliseconds
+
+    new Timer( delay, tActions ).start();
+    }
 
 
   }
