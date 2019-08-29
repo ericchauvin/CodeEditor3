@@ -37,7 +37,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Timer;
-import java.awt.event.ActionListener;
+// import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 
 // black, blue, cyan, darkGray, gray, green, lightGray,
@@ -64,7 +65,7 @@ public class MainApp implements Runnable
   private ConfigureFile mainConfigFile;
   private ConfigureFile projectConfigFile;
   private final int maximumTabsOpen = 30;
-  // private Timer keyboardTimer;
+  private Timer keyboardTimer;
 
 
 
@@ -834,10 +835,78 @@ public class MainApp implements Runnable
 
   private void setupTimer()
     {
-    int delay = 1000; //milliseconds
-
-    new Timer( delay, tActions ).start();
+    int delay = 1000;
+    keyboardTimer = new Timer( delay, tActions );
+    keyboardTimer.start();
     }
+
+
+
+  public void keyboardTimerEvent()
+    {
+    try
+    {
+    showStatus( "keyboardTimerEvent called." );
+    keyboardTimer.stop();
+
+
+/*
+====
+https://docs.oracle.com/javase/tutorial/uiswing/events/windowlistener.html
+https://docs.oracle.com/javase/7/docs/api/java/awt/event/WindowEvent.html
+
+    if (IsClosing)
+      return;
+
+    int SelectedIndex = MainTabControl.SelectedIndex;
+    if( SelectedIndex >= TabPagesArray.Length )
+      {
+      CursorLabel.Text = "No textbox selected.";
+      return;
+      }
+
+    if( SelectedIndex < 0 )
+      {
+      CursorLabel.Text = "No textbox selected.";
+      // MessageBox.Show( "There is no tab page selected, or the status page is selected. (Top.)", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    // The status page is at zero.
+    if( SelectedIndex == 0 )
+      {
+      CursorLabel.Text = "Status page.";
+      return;
+      }
+
+    string TabTitle = TabPagesArray[SelectedIndex].TabTitle;
+    // TabPagesArray[SelectedIndex].FileName;
+
+    TextBox SelectedTextBox = TabPagesArray[SelectedIndex].MainTextBox;
+    if (SelectedTextBox == null)
+      return;
+
+    if (SelectedTextBox.IsDisposed)
+      return;
+
+    int Start = SelectedTextBox.SelectionStart;
+    // int Start2 = SelectedTextBox.GetFirstCharIndexOfCurrentLine();
+
+    // The +1 is for display and matching with
+    // the compiler error line number.
+    int Line = 1 + SelectedTextBox.GetLineFromCharIndex( Start );
+    CursorLabel.Text = "Line: " + Line.ToString("N0") + "     " + TabTitle + "      Proj: " + ShowProjectText;
+
+*/
+    keyboardTimer.start();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in keyboardTimerEvent()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
 
 
   }
