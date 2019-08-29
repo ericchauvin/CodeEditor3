@@ -71,6 +71,7 @@ public class EditorTabPage
 
     mainTextArea.setText( sBuilder.toString() );
     // mainTextArea.append( toShow + "\n" );
+    mainTextArea.setCaretPosition( 0 );
 
     }
     catch( Exception e )
