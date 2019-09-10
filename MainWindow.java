@@ -72,12 +72,9 @@ public class MainWindow extends JFrame implements
   private String showProjectText = "";
   // private String searchText = "";
   private String statusFileName = "";
-
-// ======
-  // private TimerActions tActions;
   private final int maximumTabsOpen = 30;
   private Timer keyboardTimer;
-
+  private boolean windowIsClosing = false;
 
 
   private MainWindow()
@@ -113,8 +110,7 @@ public class MainWindow extends JFrame implements
     addWindowFocusListener( this );
     addWindowStateListener( this );
 
-
-    // setupTimer();
+    setShowProjectText();
 
     // Center it.
     setLocationRelativeTo( null );
@@ -122,71 +118,73 @@ public class MainWindow extends JFrame implements
 
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + MainApp.versionDate );
+
+    setupTimer();
     }
 
 
 
   public void windowStateChanged( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowStateChanged" );
     }
 
 
   public void windowGainedFocus( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowGainedFocus" );
     }
 
 
   public void windowLostFocus( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowLostFocus" );
     }
 
 
 
   public void windowOpened( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowOpened" );
     }
 
 
 
   public void windowClosing( WindowEvent e )
     {
-    showStatus( "" );
+    windowIsClosing = true;
     }
 
 
   public void windowClosed( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowClosed" );
     }
 
 
   public void windowIconified( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowIconified" );
     }
 
 
 
   public void windowDeiconified( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowDeiconified" );
     }
 
 
 
   public void windowActivated( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowActivated" );
     }
 
 
   public void windowDeactivated( WindowEvent e )
     {
-    showStatus( "" );
+    // showStatus( "windowDeactivated" );
     }
 
 
@@ -465,6 +463,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
 
+/*
     menuItem = new JMenuItem( "Select All" );
     menuItem.setMnemonic( KeyEvent.VK_A );
     menuItem.setForeground( Color.white );
@@ -473,9 +472,8 @@ public class MainWindow extends JFrame implements
     menuItem.setActionCommand( "EditSelectAll" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
+*/
 
-
-// =======
 
     ///////////////////////
     // Project Menu:
@@ -516,14 +514,14 @@ public class MainWindow extends JFrame implements
     }
 
 
-/*
+
   private void setupTimer()
     {
-    int delay = 1000;
-    keyboardTimer = new Timer( delay, tActions );
+    int delay = 250;
+    keyboardTimer = new Timer( delay, this );
     keyboardTimer.start();
     }
-*/
+
 
 
 
@@ -669,13 +667,19 @@ public class MainWindow extends JFrame implements
 
   public void actionPerformed( ActionEvent event )
     {
-    // For most things this will be the outside try-catch
-    // block.  In other words it catches anything not
-    // otherwise caught somewhere else.
     try
     {
+    // String paramS = event.paramString();
+    // showStatus( "paramS: " + paramS );
 
     String command = event.getActionCommand();
+
+    if( command == null )
+      {
+      keyboardTimerEvent();
+      return;
+      }
+
     showStatus( "ActionEvent Command is: " + command );
 
     //////////////
@@ -683,21 +687,25 @@ public class MainWindow extends JFrame implements
     if( command == "FileOpen" )
       {
       openFile();
+      return;
       }
 
     if( command == "FileSaveAll" )
       {
       saveAllFiles();
+      return;
       }
 
     if( command == "FileCloseCurrent" )
       {
       closeCurrentFile();
+      return;
       }
 
     if( command == "FileExit" )
       {
       System.exit( 0 );
+      // return;
       }
 
 
@@ -707,29 +715,35 @@ public class MainWindow extends JFrame implements
     if( command == "EditCopy" )
       {
       editCopy();
+      return;
       }
 
     if( command == "EditCut" )
       {
       editCut();
+      return;
       }
 
     if( command == "EditPaste" )
       {
       editPaste();
+      return;
       }
 
+/*
     if( command == "EditSelectAll" )
       {
       editSelectAll();
+      return;
       }
-
+*/
 
     //////////////
     // Help Menu:
     if( command == "HelpAbout" )
       {
       showAboutBox();
+      return;
       }
 
     }
@@ -738,8 +752,73 @@ public class MainWindow extends JFrame implements
       showStatus( "Exception in actionPerformed()." );
       showStatus( e.getMessage() );
       }
-
     }
+
+
+
+  private void keyboardTimerEvent()
+    {
+    try
+    {
+    // showStatus( "keyboardTimerEvent called." );
+    // keyboardTimer.stop();
+
+    if( windowIsClosing )
+      {
+      keyboardTimer.stop();
+      return;
+      }
+
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+
+    // The status page is at zero.
+    if( selectedIndex == 0 )
+      {
+      statusLabel.setText( "Status page." );
+      return;
+      }
+
+    if( selectedIndex < 1 )
+      {
+      statusLabel.setText( "No text area selected." );
+      return;
+      }
+
+    if( selectedIndex >= tabPagesArrayLast )
+      {
+      statusLabel.setText( "No text area selected." );
+      return;
+      }
+
+    String tabTitle = tabPagesArray[selectedIndex].getTabTitle();
+
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      return;
+
+    int position = selectedTextArea.getCaretPosition();
+
+    int line = selectedTextArea.getLineOfOffset( position );
+
+    // The +1 is for display and matching with
+    // the compiler error line number.
+    line++;
+
+    String showText = "Line: " + line +
+                    "     " + tabTitle +
+                    "      Proj: " + showProjectText;
+
+    statusLabel.setText( showText );
+
+    // keyboardTimer.start();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in keyboardTimerEvent()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
 
 
 
@@ -755,6 +834,7 @@ public class MainWindow extends JFrame implements
 
     return false;
     }
+
 
 
   private void editCopy()
@@ -775,7 +855,8 @@ public class MainWindow extends JFrame implements
     }
 
 
-  public void editCut()
+
+  private void editCut()
     {
     try
     {
@@ -793,7 +874,8 @@ public class MainWindow extends JFrame implements
     }
 
 
-  public void editPaste()
+
+  private void editPaste()
     {
     try
     {
@@ -812,7 +894,8 @@ public class MainWindow extends JFrame implements
 
 
 
-  public void editSelectAll()
+  /*
+  private void editSelectAll()
     {
     try
     {
@@ -828,10 +911,10 @@ public class MainWindow extends JFrame implements
       showStatus( e.getMessage() );
       }
     }
+    */
 
 
-
-  public void showAboutBox()
+  private void showAboutBox()
     {
     JOptionPane.showMessageDialog( this,
                  "Programming by Eric Chauvin.  Version date: " + MainApp.versionDate );
@@ -938,83 +1021,6 @@ public class MainWindow extends JFrame implements
     }
 */
 
-
-
-/*
-  private void setupTimer()
-    {
-    int delay = 1000;
-    keyboardTimer = new Timer( delay, tActions );
-    keyboardTimer.start();
-    }
-*/
-
-
-
-/*
-  public void keyboardTimerEvent()
-    {
-    try
-    {
-    showStatus( "keyboardTimerEvent called." );
-    keyboardTimer.stop();
-
-
-
-====
-
-    if (IsClosing)
-      return;
-
-    int SelectedIndex = MainTabControl.SelectedIndex;
-    if( SelectedIndex >= TabPagesArray.Length )
-      {
-      CursorLabel.Text = "No textbox selected.";
-      return;
-      }
-
-    if( SelectedIndex < 0 )
-      {
-      CursorLabel.Text = "No textbox selected.";
-      // MessageBox.Show( "There is no tab page selected, or the status page is selected. (Top.)", MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    // The status page is at zero.
-    if( SelectedIndex == 0 )
-      {
-      CursorLabel.Text = "Status page.";
-      return;
-      }
-
-    string TabTitle = TabPagesArray[SelectedIndex].TabTitle;
-    // TabPagesArray[SelectedIndex].FileName;
-
-    TextBox SelectedTextBox = TabPagesArray[SelectedIndex].MainTextBox;
-    if (SelectedTextBox == null)
-      return;
-
-    if (SelectedTextBox.IsDisposed)
-      return;
-
-    int Start = SelectedTextBox.SelectionStart;
-    // int Start2 = SelectedTextBox.GetFirstCharIndexOfCurrentLine();
-
-    // The +1 is for display and matching with
-    // the compiler error line number.
-    int Line = 1 + SelectedTextBox.GetLineFromCharIndex( Start );
-    CursorLabel.Text = "Line: " + Line.ToString("N0") + "     " + TabTitle + "      Proj: " + ShowProjectText;
-
-========
-    keyboardTimer.start();
-    }
-    catch( Exception e )
-      {
-      showStatus( "Exception in keyboardTimerEvent()." );
-      showStatus( e.getMessage() );
-      }
-    }
-*/
 
 
   }
