@@ -38,6 +38,12 @@ public class EditorTabPage
 
 
 
+  public String getTabTitle()
+    {
+    return tabTitle;
+    }
+
+
   public JTextArea getTextArea()
     {
     return mainTextArea;
