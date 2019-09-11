@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "9/10/2019";
+  public static final String versionDate = "9/11/2019";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
@@ -53,12 +53,11 @@ public class MainApp implements Runnable
     {
     // checkSingleInstance()
 
+    String programDirectory = "\\Eric\\CodeEditorJava\\";
+    int length = argsArray.length;
+    if( length > 0 )
+      programDirectory = argsArray[0];
 
-    // argsArray
-    // Pass this program's directory as a parameter from
-    // the batch file.
-
-    String programDirectory = "C:\\Eric\\CodeEditorJava\\";
     String mainConfigFileName = programDirectory +
                                       "MainConfigure.txt";
 
@@ -77,13 +76,20 @@ public class MainApp implements Runnable
                                  currentProjectFileName,
                                  true );
 
-      mainConfigFile.writeToTextFile();
+      // mainConfigFile.writeToTextFile();
       }
 
     projectConfigFile = new ConfigureFile( this,
                              currentProjectFileName );
 
     mainWin = new MainWindow( this, "Code Editor" );
+
+    showStatus( " " );
+    showStatus( "argsArray length: " + length );
+    for( int count = 0; count < length; count++ )
+      showStatus( argsArray[count] );
+
+    showStatus( " " );
     }
 
 
