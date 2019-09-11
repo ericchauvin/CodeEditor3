@@ -1,13 +1,12 @@
 // Copyright Eric Chauvin 2019.
 
 
-// java.lang.Runtime
-// Runtime.exec( "Command" );
+
+
+////////// java.awt.event.KeyEvent
 
 
 
-// https://docs.oracle.com/javase/tutorial/uiswing/events/windowlistener.html
-// https://docs.oracle.com/javase/7/docs/api/java/awt/event/WindowEvent.html
 
 
 import javax.swing.JFrame;
@@ -94,8 +93,6 @@ public class MainWindow extends JFrame implements
     menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 46 );
 
     setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
-    getContentPane().setBackground( Color.red );
-    // getContentPane().setForeground( Color.red );
 
     setSize( 1200, 600 );
     addComponents( getContentPane() );
@@ -164,6 +161,7 @@ public class MainWindow extends JFrame implements
 
   public void windowIconified( WindowEvent e )
     {
+    keyboardTimer.stop();
     // showStatus( "windowIconified" );
     }
 
@@ -171,6 +169,7 @@ public class MainWindow extends JFrame implements
 
   public void windowDeiconified( WindowEvent e )
     {
+    keyboardTimer.start();
     // showStatus( "windowDeiconified" );
     }
 
@@ -191,17 +190,18 @@ public class MainWindow extends JFrame implements
 
   private void addComponents( Container pane )
     {
+    // pane.setBackground( Color.red );
+    // pane.setForeground( Color.red );
     pane.setLayout( new LayoutSimpleVertical());
 
     JPanel mainPanel = new JPanel();
-
     mainPanel.setLayout( new LayoutSimpleVertical());
     mainPanel.setBackground( Color.black );
     // Setting it to FixedHeightMax means this component is
     // stretchable.
     // new Dimension( Width, Height );
     mainPanel.setPreferredSize( new Dimension(
-                         1, LayoutSimpleVertical.FixedHeightMax ));
+                   1, LayoutSimpleVertical.FixedHeightMax ));
 
     pane.add( mainPanel );
 
@@ -225,10 +225,9 @@ public class MainWindow extends JFrame implements
     mainTabbedPane = new JTabbedPane();
     mainTabbedPane.setBackground( Color.green );
     mainTabbedPane.setForeground( Color.black );
-
     mainTabbedPane.setFont( mainFont );
     mainTabbedPane.setPreferredSize( new Dimension(
-                         1, LayoutSimpleVertical.FixedHeightMax ));
+                   1, LayoutSimpleVertical.FixedHeightMax ));
 
     mainPanel.add( mainTabbedPane );
 
@@ -243,6 +242,7 @@ public class MainWindow extends JFrame implements
     if( statusTextArea == null )
       return;
 
+// ====
     statusTextArea.append( toShow + "\n" );
     }
 
@@ -483,7 +483,7 @@ public class MainWindow extends JFrame implements
     projectMenu.setFont( menuFont );
     menuBar.add( projectMenu );
 
-    menuItem = new JMenuItem( "Set Current Project" );
+    menuItem = new JMenuItem( "Set Current" );
     menuItem.setMnemonic( KeyEvent.VK_C );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
@@ -531,6 +531,7 @@ public class MainWindow extends JFrame implements
     // fc.setCurrentDirectory()
 
     // FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
+    // fc.setFileFilter( filter );
     // fc.addChoosableFileFilter( filter );
 
     int returnVal = fc.showOpenDialog( this );
@@ -565,6 +566,10 @@ public class MainWindow extends JFrame implements
 
   private void openRecentFiles()
     {
+    mainTabbedPane.removeAll();
+    tabPagesArrayLast = 0;
+    addStatusTextPane();
+
     // showStatus( "Opening recent files." );
 
     // int howMany = 0;
@@ -651,9 +656,6 @@ public class MainWindow extends JFrame implements
 
     mApp.projectConfigFile.writeToTextFile();
 
-    mainTabbedPane.removeAll();
-    tabPagesArrayLast = 0;
-    addStatusTextPane();
     openRecentFiles();
     }
     catch( Exception e )
@@ -738,6 +740,21 @@ public class MainWindow extends JFrame implements
       }
 */
 
+    ///////////////
+    // Project Menu:
+    if( command == "ProjectSetCurrent" )
+      {
+      setCurrentProject();
+      return;
+      }
+
+// =======
+// Build and run...
+// java.lang.Runtime
+// Runtime.exec( "Command" );
+
+
+
     //////////////
     // Help Menu:
     if( command == "HelpAbout" )
@@ -818,7 +835,6 @@ public class MainWindow extends JFrame implements
       showStatus( e.getMessage() );
       }
     }
-
 
 
 
@@ -914,6 +930,7 @@ public class MainWindow extends JFrame implements
     */
 
 
+
   private void showAboutBox()
     {
     JOptionPane.showMessageDialog( this,
@@ -955,71 +972,106 @@ public class MainWindow extends JFrame implements
 
 
 
-
-/*
-  private void setCurrentProjectToolStripMenuItem_Click(object sender, EventArgs e)
+  private void setCurrentProject()
     {
-    string FileToOpen = "";
+    String fileToOpen = "";
 
     try
     {
-    // Get this starting directory name from a confifiguration
-    // file or something.
-    FileToOpen = OpenFileNameDialog( "C:\\Eric", "*.txt" );
-    if( FileToOpen.Length < 1 )
-      return;
+    final JFileChooser fc = new JFileChooser();
 
-    if( !FileToOpen.ToLower().Contains( ".txt" ))
-      {
-      MessageBox.Show( "This should be a .txt file: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    // MessageBox.Show( "File to open: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
-
-    if( !File.Exists( FileToOpen ))
-      {
-      MessageBox.Show( "The file does not exist: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    MainTabControl.TabPages.Clear();
-    TabPagesArrayLast = 0;
-    AddStatusPage();
-
-    string ProjectFileName = FileToOpen;
-
-    if( ProjectFileName.Length < 4 )
-      {
-      MessageBox.Show( "Pick a file in the Project directory.", MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    MainConfigFile.SetString( "CurrentProjectFile", ProjectFileName, true );
-
-    ProjectConfigFile = new ConfigureFile( ProjectFileName, this );
-
-    string WorkingDir = ProjectFileName;
-    WorkingDir = Path.GetDirectoryName( WorkingDir );
-   ProjectConfigFile.SetString( "ProjectDirectory", WorkingDir, false );
-
-    OpenRecentFiles();
-
-    // string BuildBatchFileName = ProjectConfigFile.GetString( "BuildBatchFile" );
-
-    SetShowProjectText();
-
+    try
+    {
+    File dir = new File( "c:\\Eric\\" );
+    fc.setCurrentDirectory( dir );
     }
-    catch( Exception Except )
+    catch( Exception e )
       {
-      string ShowS = "Exception with opening project file.\r\n" +
-                     "Entered: " + FileToOpen + "\r\n" +
-                     Except.Message;
+      showStatus( "Couldn't set the directory for the file chooser." );
+      showStatus( e.getMessage() );
+      }
 
-      MessageBox.Show( ShowS, MessageBoxTitle, MessageBoxButtons.OK );
+    FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
+    // fc.addChoosableFileFilter( filter );
+    fc.setFileFilter( filter );
+
+    int returnVal = fc.showOpenDialog( this );
+    if( returnVal != JFileChooser.APPROVE_OPTION )
+      return;
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
+    // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
+    File file = fc.getSelectedFile();
+    String fileName = file.getName();
+    showStatus( "Project file name picked is: " + fileName );
+
+    String pathName = file.getPath();
+    showStatus( "Project path name picked is: " + pathName );
+
+    if( !pathName.toLowerCase().contains( ".txt" ))
+      {
+      JOptionPane.showMessageDialog( this,
+                 "The file should be a .txt file." );
+
+      return;
+      }
+
+    if( !file.exists())
+      {
+      JOptionPane.showMessageDialog( this,
+                 "The file doesn't exist." );
+
+      return;
+      }
+
+    String projectFileName = pathName;
+
+    if( projectFileName.length() < 4 )
+      {
+      JOptionPane.showMessageDialog( this,
+                 "Pick a file name." );
+
+      return;
+      }
+
+    Path path = Paths.get( projectFileName );
+
+    Path parentDir = path.getParent();
+    if( parentDir == null )
+      {
+      JOptionPane.showMessageDialog( this,
+                 "The file name has no parent directory." );
+
+      return;
+      }
+
+    String workingDir = parentDir.toString();
+    showStatus( "workingDir is: " + workingDir );
+
+    mApp.mainConfigFile.setString( "CurrentProjectFile",
+                               projectFileName, true );
+
+    mApp.projectConfigFile = new ConfigureFile(
+                                  mApp, projectFileName );
+
+    mApp.projectConfigFile.setString( "ProjectDirectory",
+                                         workingDir, false );
+
+    // openRecentFiles() clears any existing files first.
+    openRecentFiles();
+
+    setShowProjectText();
+    }
+    catch( Exception e )
+      {
+      String showS = "Exception with opening project file.\n" +
+                     "Entered: " + fileToOpen;
+
+      showStatus( showS );
+      showStatus( e.getMessage() );
       }
     }
-*/
+
 
 
 
