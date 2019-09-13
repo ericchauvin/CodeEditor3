@@ -1,9 +1,12 @@
 // Copyright Eric Chauvin 2019.
 
 
+// Make a menu: Alt-K for Keyboard.
+//  Make it move to tabs in the tab control and all that.
+// Set the focus in to the current page, etc.
 
 
-////////// java.awt.event.KeyEvent
+// https://docs.oracle.com/javase/7/docs/api/javax/swing/text/DefaultCaret.html
 
 
 
@@ -42,6 +45,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Timer;
+// import javax.swing.text.DefaultCaret;
 
 
 
@@ -223,9 +227,14 @@ public class MainWindow extends JFrame implements
     // magenta, orange, pink, red, white, yellow.
 
     mainTabbedPane = new JTabbedPane();
-    mainTabbedPane.setBackground( Color.green );
-    mainTabbedPane.setForeground( Color.black );
-    mainTabbedPane.setFont( mainFont );
+    mainTabbedPane.setBackground( Color.black );
+    // mainTabbedPane.setForeground( Color.white );
+
+    // Not these:
+    // mainTabbedPane.setSelectedTextColor( Color.black );
+    // mainTabbedPane.setSelectionColor( Color.white );
+
+    mainTabbedPane.setFont( menuFont );
     mainTabbedPane.setPreferredSize( new Dimension(
                    1, LayoutSimpleVertical.FixedHeightMax ));
 
@@ -242,7 +251,6 @@ public class MainWindow extends JFrame implements
     if( statusTextArea == null )
       return;
 
-// ====
     statusTextArea.append( toShow + "\n" );
     }
 
@@ -261,38 +269,10 @@ public class MainWindow extends JFrame implements
   private void addStatusTextPane()
     {
     statusTextArea = new JTextArea();
-    statusTextArea.setFont( mainFont );
-    statusTextArea.setLineWrap( true );
-    statusTextArea.setWrapStyleWord( true );
-    statusTextArea.setBackground( Color.black );
-    statusTextArea.setForeground( Color.white );
-    statusTextArea.setCaretColor( Color.white );
-    statusTextArea.setSelectedTextColor( Color.black );
-    statusTextArea.setSelectionColor( Color.white );
+    addTextPane( statusTextArea,
+                 "Status",
+                 statusFileName );
 
-    JScrollPane scrollPane1 = new JScrollPane( statusTextArea );
-
-    scrollPane1.setVerticalScrollBarPolicy(
-             JScrollPane.VERTICAL_SCROLLBAR_ALWAYS );
-
-    mainTabbedPane.addTab( "Status", null, scrollPane1 );
-
-    EditorTabPage newPage = new EditorTabPage( mApp,
-                                               "Status",
-                                               statusFileName,
-                                               statusTextArea );
-
-    tabPagesArray[tabPagesArrayLast] = newPage;
-    // ProjectConfigFile.SetString( "RecentFile" + TabPagesArrayLast.ToString(), FileName, true );
-    tabPagesArrayLast++;
-
-    if( tabPagesArrayLast >= tabPagesArray.length )
-      {
-      tabPagesArray = resizeTabPagesArray( tabPagesArray, 16 );
-      }
-
-    // mainTabbedPane.setBackgroundAt( 0, Color.red );
-    // setForegroundAt(int index, Color foreground)
     }
 
 
@@ -320,24 +300,29 @@ public class MainWindow extends JFrame implements
 
 
 
-  private void addTextPane( String tabTitle, String fileName )
+  private void addTextPane( JTextArea textAreaToUse,
+                            String tabTitle,
+                            String fileName )
     {
-    JTextArea textArea1 = new JTextArea();
+    JTextArea textArea1;
+    if( textAreaToUse == null )
+      textArea1 = new JTextArea();
+    else
+      textArea1 = textAreaToUse;
+
     textArea1.setFont( mainFont );
     textArea1.setLineWrap( false );
     // textArea1.setWrapStyleWord( true );
     textArea1.setBackground( Color.black );
     textArea1.setForeground( Color.white );
-    textArea1.setCaretColor( Color.white );
     textArea1.setSelectedTextColor( Color.white );
     textArea1.setSelectionColor( Color.darkGray );
     // black, blue, cyan, darkGray, gray, green, lightGray,
     // magenta, orange, pink, red, white, yellow.
 
-
-    // textArea1.setText( "The title is: " + tabTitle );
-    // String getText();
-    // append( String )
+    CaretWide cWide = new CaretWide();
+    textArea1.setCaret( cWide );
+    textArea1.setCaretColor( Color.white );
 
     JScrollPane scrollPane1 = new JScrollPane( textArea1 );
 
@@ -347,11 +332,11 @@ public class MainWindow extends JFrame implements
     mainTabbedPane.addTab( tabTitle, null, scrollPane1,
                       "Tool tip." );
 
-    // getTabComponentAt(int index)
     JLabel tabLabel = new JLabel( tabTitle );
-    tabLabel.setForeground( Color.black );
-    // It's transparent.  tabLabel.setBackground( Color.red );
-    tabLabel.setFont( mainFont );
+    tabLabel.setOpaque( true );
+    tabLabel.setForeground( Color.white );
+    tabLabel.setBackground( Color.black );
+    tabLabel.setFont( menuFont );
     mainTabbedPane.setTabComponentAt( tabPagesArrayLast,
                                 tabLabel );
 
@@ -559,7 +544,7 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-    addTextPane( fileName, pathName );
+    addTextPane( null, fileName, pathName );
     }
 
 
@@ -590,7 +575,7 @@ public class MainWindow extends JFrame implements
       // String pathName = file.getPath();
       // showStatus( "Path name picked is: " + pathName );
 
-      addTextPane( tabTitle, fileName );
+      addTextPane( null, tabTitle, fileName );
       }
 
     // showStatus( "Files opened: " + howMany );
@@ -608,8 +593,6 @@ public class MainWindow extends JFrame implements
       tabPagesArray[count].writeToTextFile();
 
       String fileName = tabPagesArray[count].getFileName();
-      showStatus( "Setting: " + fileName );
-
       mApp.projectConfigFile.setString( "RecentFile" + count, fileName, false );
       }
 
