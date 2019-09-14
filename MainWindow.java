@@ -1,15 +1,6 @@
 // Copyright Eric Chauvin 2019.
 
 
-// Make a menu: Alt-K for Keyboard.
-//  Make it move to tabs in the tab control and all that.
-// Set the focus in to the current page, etc.
-
-
-// https://docs.oracle.com/javase/7/docs/api/javax/swing/text/DefaultCaret.html
-
-
-
 
 
 import javax.swing.JFrame;
@@ -45,7 +36,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Timer;
-// import javax.swing.text.DefaultCaret;
 
 
 
@@ -85,6 +75,7 @@ public class MainWindow extends JFrame implements
     }
 
 
+
   public MainWindow( MainApp useApp, String showText )
     {
     super( showText );
@@ -119,6 +110,8 @@ public class MainWindow extends JFrame implements
 
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + MainApp.versionDate );
+    mainTabbedPane.setSelectedIndex( 0 );
+    setTabbedTextArea( 0 );
 
     setupTimer();
     }
@@ -479,6 +472,29 @@ public class MainWindow extends JFrame implements
 
 
     ///////////////////////
+    // Keyboard Menu:
+    JMenu keyBoardMenu = new JMenu( "Keyboard" );
+    keyBoardMenu.setMnemonic( KeyEvent.VK_K );
+    keyBoardMenu.setForeground( Color.white );
+    keyBoardMenu.setFont( menuFont );
+    menuBar.add( keyBoardMenu );
+
+    menuItem = new JMenuItem( "Next Tab" );
+    menuItem.setMnemonic( KeyEvent.VK_T );
+    // ALT_MASK  CTRL_MASK  SHIFT_MASK
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+                     KeyEvent.VK_T, ActionEvent.CTRL_MASK ));
+
+
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    menuItem.setActionCommand( "KeyboardNextTab" );
+    menuItem.addActionListener( this );
+    keyBoardMenu.add( menuItem );
+
+
+    ///////////////////////
     // Help Menu:
     JMenu helpMenu = new JMenu( "Help" );
     helpMenu.setMnemonic( KeyEvent.VK_H );
@@ -551,6 +567,8 @@ public class MainWindow extends JFrame implements
 
   private void openRecentFiles()
     {
+    try
+    {
     mainTabbedPane.removeAll();
     tabPagesArrayLast = 0;
     addStatusTextPane();
@@ -577,8 +595,12 @@ public class MainWindow extends JFrame implements
 
       addTextPane( null, tabTitle, fileName );
       }
-
-    // showStatus( "Files opened: " + howMany );
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in openRecentFiles()." );
+      showStatus( e.getMessage() );
+      }
     }
 
 
@@ -737,6 +759,13 @@ public class MainWindow extends JFrame implements
 // Runtime.exec( "Command" );
 
 
+    ///////////////
+    // Keyboard Menu:
+    if( command == "KeyboardNextTab" )
+      {
+      moveToNextTab();
+      return;
+      }
 
     //////////////
     // Help Menu:
@@ -1056,6 +1085,70 @@ public class MainWindow extends JFrame implements
     }
 
 
+
+  private void setTabbedTextArea( int selectedIndex )
+    {
+    try
+    {
+    if( selectedIndex < 0 )
+      return;
+
+    if( selectedIndex >= tabPagesArrayLast )
+      return;
+
+    JTextArea selectedTextArea = tabPagesArray[
+                           selectedIndex].getTextArea();
+
+    selectedTextArea.requestFocusInWindow();
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in setTabbedTextArea()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+  private void moveToNextTab()
+    {
+    try
+    {
+    if( tabPagesArrayLast < 1 )
+      return;
+
+    if( tabPagesArrayLast < 2 )
+      {
+      mainTabbedPane.setSelectedIndex( 0 );
+      setTabbedTextArea( 0 );
+      return;
+      }
+
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( selectedIndex < 0 )
+      {
+      mainTabbedPane.setSelectedIndex( 0 );
+      setTabbedTextArea( 0 );
+      return;
+      }
+
+    if( (selectedIndex + 1) >= tabPagesArrayLast )
+      {
+      mainTabbedPane.setSelectedIndex( 0 );
+      setTabbedTextArea( 0 );
+      return;
+      }
+
+    selectedIndex++;
+    mainTabbedPane.setSelectedIndex( selectedIndex );
+    setTabbedTextArea( selectedIndex );
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in moveToNextTab()." );
+      showStatus( e.getMessage() );
+      }
+    }
 
 
   }
