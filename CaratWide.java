@@ -1,4 +1,4 @@
-// This is adapted and modified from the original 
+// This is adapted and modified from the original
 // DefaultCaret.
 
 
@@ -9,7 +9,7 @@ import java.awt.Rectangle;
 import javax.swing.plaf.TextUI;
 
 
- 
+
 
 public class CaretWide extends DefaultCaret
   {
@@ -64,8 +64,10 @@ public class CaretWide extends DefaultCaret
     // Originally it was:
     // !this._contains( r.x, r.y, r.width, r.height ))
 
-    if( !contains( r.x, r.y ) ||
-        !contains( r.x + r.width, r.y + r.height ))
+    Rectangle currentRec = new Rectangle( r.x, r.y,
+                                     r.width, r.height );
+
+    if( !contains( currentRec ) )
       {
       // It got out of sync and needs the right location?
       Rectangle clip = g.getClipBounds();
@@ -79,11 +81,10 @@ public class CaretWide extends DefaultCaret
 
       damage( r );
       }
- 
+
     g.setColor( getComponent().getCaretColor() );
-    int paintWidth = drawWidth;
-    r.x -= paintWidth  >> 1;
-    g.fillRect( r.x, r.y, paintWidth, r.height );
+    r.x -= drawWidth  >> 1;
+    g.fillRect( r.x, r.y, drawWidth, r.height );
     }
     catch( Exception e )
       {
@@ -94,5 +95,3 @@ public class CaretWide extends DefaultCaret
 
 
   }
-
-
