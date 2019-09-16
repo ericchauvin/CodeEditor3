@@ -2,7 +2,6 @@
 
 
 
-
 import javax.swing.JFrame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -68,6 +67,7 @@ public class MainWindow extends JFrame implements
   private final int maximumTabsOpen = 30;
   private Timer keyboardTimer;
   private boolean windowIsClosing = false;
+
 
 
   private MainWindow()
@@ -223,10 +223,6 @@ public class MainWindow extends JFrame implements
     mainTabbedPane.setBackground( Color.black );
     // mainTabbedPane.setForeground( Color.white );
 
-    // Not these:
-    // mainTabbedPane.setSelectedTextColor( Color.black );
-    // mainTabbedPane.setSelectionColor( Color.white );
-
     mainTabbedPane.setFont( menuFont );
     mainTabbedPane.setPreferredSize( new Dimension(
                    1, LayoutSimpleVertical.FixedHeightMax ));
@@ -293,6 +289,18 @@ public class MainWindow extends JFrame implements
 
 
 
+  private void setTabLabel( String title, int index )
+    {
+    JLabel tabLabel = new JLabel( title );
+    tabLabel.setOpaque( true );
+    tabLabel.setForeground( Color.white );
+    tabLabel.setBackground( Color.black );
+    tabLabel.setFont( menuFont );
+    mainTabbedPane.setTabComponentAt( index, tabLabel );
+    }
+
+
+
   private void addTextPane( JTextArea textAreaToUse,
                             String tabTitle,
                             String fileName )
@@ -325,13 +333,7 @@ public class MainWindow extends JFrame implements
     mainTabbedPane.addTab( tabTitle, null, scrollPane1,
                       "Tool tip." );
 
-    JLabel tabLabel = new JLabel( tabTitle );
-    tabLabel.setOpaque( true );
-    tabLabel.setForeground( Color.white );
-    tabLabel.setBackground( Color.black );
-    tabLabel.setFont( menuFont );
-    mainTabbedPane.setTabComponentAt( tabPagesArrayLast,
-                                tabLabel );
+    setTabLabel( tabTitle, tabPagesArrayLast );
 
     EditorTabPage newPage = new EditorTabPage( mApp,
                                                tabTitle,
@@ -375,10 +377,27 @@ public class MainWindow extends JFrame implements
     menuItem.setFont( menuFont );
     fileMenu.add( menuItem );
 
+    menuItem = new JMenuItem( "Save File As", KeyEvent.VK_A );
+    menuItem.setActionCommand( "FileSaveAs" );
+    menuItem.addActionListener( this );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    fileMenu.add( menuItem );
+
+
     menuItem = new JMenuItem( "Save All", KeyEvent.VK_L );
-    // menuItem.setAccelerator( KeyStroke.getKeyStroke(
-       // KeyEvent.VK_1, ActionEvent.ALT_MASK ));
     menuItem.setActionCommand( "FileSaveAll" );
+    menuItem.addActionListener( this );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( menuFont );
+    fileMenu.add( menuItem );
+
+
+    menuItem = new JMenuItem( "New File" );
+    menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setActionCommand( "FileNew" );
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
@@ -516,6 +535,133 @@ public class MainWindow extends JFrame implements
 
 
 
+
+  public void actionPerformed( ActionEvent event )
+    {
+    try
+    {
+    // String paramS = event.paramString();
+    // showStatus( "paramS: " + paramS );
+
+    String command = event.getActionCommand();
+
+    if( command == null )
+      {
+      keyboardTimerEvent();
+      return;
+      }
+
+    showStatus( "ActionEvent Command is: " + command );
+
+    //////////////
+    // File Menu:
+    if( command == "FileOpen" )
+      {
+      openFile();
+      return;
+      }
+
+    if( command == "FileSaveAs" )
+      {
+      saveFileAs();
+      return;
+      }
+
+    if( command == "FileSaveAll" )
+      {
+      saveAllFiles();
+      return;
+      }
+
+    if( command == "FileNew" )
+      {
+      addNewFile();
+      return;
+      }
+
+    if( command == "FileCloseCurrent" )
+      {
+      closeCurrentFile();
+      return;
+      }
+
+    if( command == "FileExit" )
+      {
+      System.exit( 0 );
+      // return;
+      }
+
+
+    /////////////
+    // Edit Menu:
+
+    if( command == "EditCopy" )
+      {
+      editCopy();
+      return;
+      }
+
+    if( command == "EditCut" )
+      {
+      editCut();
+      return;
+      }
+
+    if( command == "EditPaste" )
+      {
+      editPaste();
+      return;
+      }
+
+/*
+    if( command == "EditSelectAll" )
+      {
+      editSelectAll();
+      return;
+      }
+*/
+
+    ///////////////
+    // Project Menu:
+    if( command == "ProjectSetCurrent" )
+      {
+      setCurrentProject();
+      return;
+      }
+
+// =======
+// Build and run...
+// java.lang.Runtime
+// Runtime.exec( "Command" );
+
+
+    ///////////////
+    // Keyboard Menu:
+    if( command == "KeyboardNextTab" )
+      {
+      moveToNextTab();
+      return;
+      }
+
+    //////////////
+    // Help Menu:
+    if( command == "HelpAbout" )
+      {
+      showAboutBox();
+      return;
+      }
+
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in actionPerformed()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+
   private void setupTimer()
     {
     int delay = 250;
@@ -610,6 +756,9 @@ public class MainWindow extends JFrame implements
     if( tabPagesArrayLast < 1 )
       return;
 
+    mainTabbedPane.setSelectedIndex( 0 );
+    setTabbedTextArea( 0 );
+
     for( int count = 1; count < tabPagesArrayLast; count++ )
       {
       tabPagesArray[count].writeToTextFile();
@@ -622,6 +771,7 @@ public class MainWindow extends JFrame implements
     mApp.projectConfigFile.writeToTextFile();
     showStatus( "Saving main config file." );
     mApp.mainConfigFile.writeToTextFile();
+    showStatus( "Saved all files." );
     }
 
 
@@ -672,116 +822,6 @@ public class MainWindow extends JFrame implements
 
 
 
-  public void actionPerformed( ActionEvent event )
-    {
-    try
-    {
-    // String paramS = event.paramString();
-    // showStatus( "paramS: " + paramS );
-
-    String command = event.getActionCommand();
-
-    if( command == null )
-      {
-      keyboardTimerEvent();
-      return;
-      }
-
-    showStatus( "ActionEvent Command is: " + command );
-
-    //////////////
-    // File Menu:
-    if( command == "FileOpen" )
-      {
-      openFile();
-      return;
-      }
-
-    if( command == "FileSaveAll" )
-      {
-      saveAllFiles();
-      return;
-      }
-
-    if( command == "FileCloseCurrent" )
-      {
-      closeCurrentFile();
-      return;
-      }
-
-    if( command == "FileExit" )
-      {
-      System.exit( 0 );
-      // return;
-      }
-
-
-    /////////////
-    // Edit Menu:
-
-    if( command == "EditCopy" )
-      {
-      editCopy();
-      return;
-      }
-
-    if( command == "EditCut" )
-      {
-      editCut();
-      return;
-      }
-
-    if( command == "EditPaste" )
-      {
-      editPaste();
-      return;
-      }
-
-/*
-    if( command == "EditSelectAll" )
-      {
-      editSelectAll();
-      return;
-      }
-*/
-
-    ///////////////
-    // Project Menu:
-    if( command == "ProjectSetCurrent" )
-      {
-      setCurrentProject();
-      return;
-      }
-
-// =======
-// Build and run...
-// java.lang.Runtime
-// Runtime.exec( "Command" );
-
-
-    ///////////////
-    // Keyboard Menu:
-    if( command == "KeyboardNextTab" )
-      {
-      moveToNextTab();
-      return;
-      }
-
-    //////////////
-    // Help Menu:
-    if( command == "HelpAbout" )
-      {
-      showAboutBox();
-      return;
-      }
-
-    }
-    catch( Exception e )
-      {
-      showStatus( "Exception in actionPerformed()." );
-      showStatus( e.getMessage() );
-      }
-    }
 
 
 
@@ -1149,6 +1189,404 @@ public class MainWindow extends JFrame implements
       showStatus( e.getMessage() );
       }
     }
+
+
+
+/*
+  private void showNonAsciiToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    ///////////
+
+    Symbols:
+        General Punctuation (2000206F)
+        Superscripts and Subscripts (2070209F)
+        Currency Symbols (20A020CF)
+        Combining Diacritical Marks for Symbols (20D020FF)
+        Letterlike Symbols (2100214F)
+        Number Forms (2150218F)
+        Arrows (219021FF)
+        Mathematical Operators (220022FF)
+        Miscellaneous Technical (230023FF)
+        Control Pictures (2400243F)
+        Optical Character Recognition (2440245F)
+        Enclosed Alphanumerics (246024FF)
+        Box Drawing (2500257F)
+        Block Elements (2580259F)
+        Geometric Shapes (25A025FF)
+        Miscellaneous Symbols (260026FF)
+        Dingbats (270027BF)
+        Miscellaneous Mathematical Symbols-A (27C027EF)
+        Supplemental Arrows-A (27F027FF)
+        Braille Patterns (280028FF)
+        Supplemental Arrows-B (2900297F)
+        Miscellaneous Mathematical Symbols-B (298029FF)
+        Supplemental Mathematical Operators (2A002AFF)
+        Miscellaneous Symbols and Arrows (2B002BFF)
+
+    // See the MarkersDelimiters.cs file.
+    // Don't exclude any characters in the Basic
+    // Multilingual Plane except these Dingbat characters
+    // which are used as markers or delimiters.
+
+    //    Dingbats (270027BF)
+
+    // for( int Count = 0x2700; Count < 0x27BF; Count++ )
+      // ShowStatus( Count.ToString( "X2" ) + ") " + Char.ToString( (char)Count ));
+
+    // for( int Count = 128; Count < 256; Count++ )
+      // ShowStatus( "      case (int)'" + Char.ToString( (char)Count ) + "': return " + Count.ToString( "X4" ) + ";" );
+
+
+    // for( int Count = 32; Count < 256; Count++ )
+      // ShowStatus( "    CharacterArray[" + Count.ToString() + "] = '" + Char.ToString( (char)Count ) + "';  //  0x" + Count.ToString( "X2" ) );
+
+     // &#147;
+
+    // ShowStatus( " " );
+    //////////
+
+
+
+    int GetVal = 0x252F; // 0x201c;
+    ShowStatus( "Character: " + Char.ToString( (char)GetVal ));
+    }
+*/
+
+
+
+
+  private void saveFileAs()
+    {
+    try
+    {
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( selectedIndex >= tabPagesArray.length )
+      {
+      showStatus( "The selected index is past the TabPagesArray length." );
+      return;
+      }
+
+    // The status page is at zero.
+    if( selectedIndex <= 0 )
+      {
+      showStatus( "There is no tab page selected, or the status page is selected. (Top.)" );
+      return;
+      }
+
+    final JFileChooser fc = new JFileChooser();
+
+    try
+    {
+    File dir = new File( "c:\\Eric\\" );
+    fc.setCurrentDirectory( dir );
+    }
+    catch( Exception e )
+      {
+      showStatus( "Couldn't set the directory for the file chooser." );
+      showStatus( e.getMessage() );
+      }
+
+    // FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
+    // fc.addChoosableFileFilter( filter );
+    // fc.setFileFilter( filter );
+
+    int returnVal = fc.showOpenDialog( this );
+    if( returnVal != JFileChooser.APPROVE_OPTION )
+      return;
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
+    // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
+    File file = fc.getSelectedFile();
+    String fileName = file.getName();
+    showStatus( "File name picked is: " + fileName );
+    String pathName = file.getPath();
+    showStatus( "Path name picked is: " + pathName );
+
+    //  JOptionPane.showMessageDialog( this,
+    //             "The file should be a .txt file." );
+
+    // if( file.exists())
+
+    if( pathName.length() < 4 )
+      {
+      JOptionPane.showMessageDialog( this,
+                 "Pick a file name." );
+
+      return;
+      }
+
+    // Path path = Paths.get( pathName );
+
+    tabPagesArray[selectedIndex].setTabTitle( fileName );
+    tabPagesArray[selectedIndex].setFileName( pathName );
+    tabPagesArray[selectedIndex].writeToTextFile();
+    setTabLabel( fileName, selectedIndex );
+
+    mApp.projectConfigFile.setString( "RecentFile" + selectedIndex, tabPagesArray[selectedIndex].getFileName(), true );
+
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in saveFileAs()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+
+/*
+  private void findToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    int SelectedIndex = MainTabControl.SelectedIndex;
+    if( SelectedIndex >= TabPagesArray.Length )
+      {
+      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    if( SelectedIndex < 0 )
+      {
+      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    SearchForm SForm = new SearchForm();
+    // try
+    SForm.ShowDialog();
+    if( SForm.DialogResult == DialogResult.Cancel )
+      {
+      SForm.FreeEverything();
+      return;
+      }
+
+    SearchText = SForm.GetSearchText().Trim().ToLower();
+    SForm.FreeEverything();
+
+    if( SearchText.Length < 1 )
+      {
+      MessageBox.Show( "No search text entered.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    TextBox SelectedBox = TabPagesArray[SelectedIndex].MainTextBox;
+    if( SelectedBox == null )
+      return;
+
+    // It has to have the focus in order to set
+    // SelectionStart.
+    SelectedBox.Select();
+
+    SelectedBox.SelectionLength = 0;
+    int Start = SelectedBox.SelectionStart;
+    if( Start < 0 )
+      Start = 0;
+
+    string TextS = SelectedBox.Text.ToLower();
+    int TextLength = TextS.Length;
+    for( int Count = Start; Count < TextLength; Count++ )
+      {
+      if( TextS[Count] == SearchText[0] )
+        {
+        int Where = SearchTextMatches( Count, TextS, SearchText );
+        if( Where >= 0 )
+          {
+          // MessageBox.Show( "Found at: " + Where.ToString(), MessageBoxTitle, MessageBoxButtons.OK );
+          SelectedBox.Select();
+          SelectedBox.SelectionStart = Where;
+          SelectedBox.ScrollToCaret();
+          return;
+          }
+        }
+      }
+
+    MessageBox.Show( "Nothing found.", MessageBoxTitle, MessageBoxButtons.OK );
+    }
+
+
+
+
+  private int SearchTextMatches( int Position, string TextToSearch, string SearchText )
+    {
+    int SLength = SearchText.Length;
+    if( SLength < 1 )
+      return -1;
+
+    if( (Position + SLength - 1) >= TextToSearch.Length )
+      return -1;
+
+    for( int Count = 0; Count < SLength; Count++ )
+      {
+      if( SearchText[Count] != TextToSearch[Position + Count] )
+        return -1;
+
+      }
+
+    return Position;
+    }
+
+
+
+  private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    int SelectedIndex = MainTabControl.SelectedIndex;
+    if( SelectedIndex >= TabPagesArray.Length )
+      {
+      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    if( SelectedIndex < 0 )
+      {
+      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    // SearchText = SForm.GetSearchText().Trim().ToLower();
+    if( SearchText.Length < 1 )
+      {
+      MessageBox.Show( "No search text entered.", MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    TextBox SelectedBox = TabPagesArray[SelectedIndex].MainTextBox;
+    if( SelectedBox == null )
+      return;
+
+    // It has to have the focus in order to set
+    // SelectionStart.
+    SelectedBox.Select();
+
+    SelectedBox.SelectionLength = 0;
+    int Start = SelectedBox.SelectionStart;
+    if( Start < 0 )
+      Start = 0;
+
+    Start = Start + SearchText.Length;
+
+    string TextS = SelectedBox.Text.ToLower();
+    int TextLength = TextS.Length;
+    for( int Count = Start; Count < TextLength; Count++ )
+      {
+      if( TextS[Count] == SearchText[0] )
+        {
+        int Where = SearchTextMatches( Count, TextS, SearchText );
+        if( Where >= 0 )
+          {
+          // MessageBox.Show( "Found at: " + Where.ToString(), MessageBoxTitle, MessageBoxButtons.OK );
+          SelectedBox.Select();
+          SelectedBox.SelectionStart = Where;
+          SelectedBox.ScrollToCaret();
+          return;
+          }
+        }
+      }
+
+    MessageBox.Show( "Nothing found.", MessageBoxTitle, MessageBoxButtons.OK );
+    }
+*/
+
+
+
+/*
+  private void runWithoutDebuggingToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    // FileName = Path.GetFileName( FileName );
+    // Path.GetDirectoryName();
+
+    string FileName = ProjectConfigFile.GetString( "ExecutableFile" );
+    // MessageBox.Show( "FileName: " + FileName, MessageBoxTitle, MessageBoxButtons.OK );
+
+    StartProgramOrFile( FileName );
+    }
+
+
+
+  private void showLogToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    ClearStatus();
+
+    string FileName = ProjectConfigFile.GetString( "ProjectDirectory" );
+    if( File.Exists( FileName + "\\JavaBuild.log" ))
+      FileName += "\\JavaBuild.log";
+    else
+      FileName += "\\msbuild.log";
+
+    ShowStatus( "Log file: " + FileName );
+    BuildLog Log = new BuildLog( FileName, this );
+    Log.ReadFromTextFile();
+    }
+
+
+
+  private void setExecutableToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    string FileToOpen = "";
+
+    try
+    {
+    // Get this starting directory name from a confifiguration
+    // file or something.
+    FileToOpen = OpenFileNameDialog( "C:\\Eric", "*.*" );
+    if( FileToOpen.Length < 1 )
+      return;
+
+    // MessageBox.Show( "File to open: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
+
+    if( !File.Exists( FileToOpen ))
+      {
+      MessageBox.Show( "The file does not exist: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
+      return;
+      }
+
+    string ExecFile = FileToOpen;
+    ProjectConfigFile.SetString( "ExecutableFile", ExecFile, true );
+    MessageBox.Show( "Exec File: " + ProjectConfigFile.GetString( "ExecutableFile" ), MessageBoxTitle, MessageBoxButtons.OK );
+
+    }
+    catch( Exception Except )
+      {
+      ShowStatus( "Exception with naming exec file." );
+      ShowStatus( Except.Message );
+      }
+    }
+
+
+
+
+  private void runToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+    // Nake a file that contains a list of the source
+    // code files used in the project.
+    // ProjectSource.txt
+    // Use the full path.  No searching for source
+    // files allowed.  They have to be explicitely
+    // listed in the file.
+    string FileName = "c:\\Eric\\CodeAnalysis\\bin\\Release\\CodeAnalysis.exe";
+    StartProgramOrFile( FileName );
+    }
+*/
+
+
+
+
+  private void addNewFile()
+    {
+    String tabTitle = "No Name";
+    String fileName = "";
+    addTextPane( null, tabTitle, fileName );
+
+    if( tabPagesArrayLast > 1 )
+      {
+      int index = tabPagesArrayLast - 1;
+      mainTabbedPane.setSelectedIndex( index );
+      setTabbedTextArea( index );
+      }
+    }
+
+
+
+
 
 
   }
