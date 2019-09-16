@@ -37,10 +37,21 @@ public class EditorTabPage
     }
 
 
+  public void setFileName( String setTo )
+    {
+    fileName = setTo;
+    }
+
 
   public String getTabTitle()
     {
     return tabTitle;
+    }
+
+
+  public void setTabTitle( String setTo )
+    {
+    tabTitle = setTo;
     }
 
 
@@ -54,6 +65,9 @@ public class EditorTabPage
     {
     try
     {
+    if( fileName.length() < 1 )
+      return;
+
     String fileS = FileUtility.readAsciiFileToString( mApp,
                                                       fileName,
                                                       false );
