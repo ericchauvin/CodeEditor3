@@ -61,13 +61,7 @@ public class CaretWide extends DefaultCaret
     if( (r.width <= 0) && (r.height <= 0) )
       return;
 
-    // Originally it was:
-    // !this._contains( r.x, r.y, r.width, r.height ))
-
-    Rectangle currentRec = new Rectangle( r.x, r.y,
-                                     r.width, r.height );
-
-    if( !contains( currentRec ) )
+    if( !contains( r ) )
       {
       // It got out of sync and needs the right location?
       Rectangle clip = g.getClipBounds();
@@ -95,3 +89,4 @@ public class CaretWide extends DefaultCaret
 
 
   }
+
