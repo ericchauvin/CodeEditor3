@@ -1,6 +1,11 @@
 // Copyright Eric Chauvin 2019.
 
 
+// Make a list of files to choose from?
+    // Object[] possibilities = {"ham", "spam", "yam"};
+//    String sResult = (String)JOptionPane.showInputDialog(
+
+
 
 import javax.swing.JFrame;
 import java.awt.event.WindowEvent;
@@ -55,14 +60,14 @@ public class MainWindow extends JFrame implements
   public static final long serialVersionUID = 1;
   private MainApp mApp;
   private Font mainFont;
-  private Font menuFont;
+  // private Font menuFont;
   private JTabbedPane mainTabbedPane;
   private JLabel statusLabel;
   private JTextArea statusTextArea;
   private EditorTabPage[] tabPagesArray;
   private int tabPagesArrayLast = 0;
   private String showProjectText = "";
-  // private String searchText = "";
+  private String searchText = "";
   private String statusFileName = "";
   private final int maximumTabsOpen = 30;
   private Timer keyboardTimer;
@@ -85,7 +90,7 @@ public class MainWindow extends JFrame implements
     tabPagesArray = new EditorTabPage[2];
 
     mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
-    menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 46 );
+    // menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
 
     setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
@@ -223,7 +228,7 @@ public class MainWindow extends JFrame implements
     mainTabbedPane.setBackground( Color.black );
     // mainTabbedPane.setForeground( Color.white );
 
-    mainTabbedPane.setFont( menuFont );
+    mainTabbedPane.setFont( mainFont );
     mainTabbedPane.setPreferredSize( new Dimension(
                    1, LayoutSimpleVertical.FixedHeightMax ));
 
@@ -259,7 +264,7 @@ public class MainWindow extends JFrame implements
     {
     statusTextArea = new JTextArea();
     addTextPane( statusTextArea,
-                 "Status",
+                 "Stat",
                  statusFileName );
 
     }
@@ -295,7 +300,7 @@ public class MainWindow extends JFrame implements
     tabLabel.setOpaque( true );
     tabLabel.setForeground( Color.white );
     tabLabel.setBackground( Color.black );
-    tabLabel.setFont( menuFont );
+    tabLabel.setFont( mainFont );
     mainTabbedPane.setTabComponentAt( index, tabLabel );
     }
 
@@ -364,7 +369,7 @@ public class MainWindow extends JFrame implements
     // File Menu:
     JMenu fileMenu = new JMenu( "File" );
     fileMenu.setMnemonic( KeyEvent.VK_F );
-    fileMenu.setFont( menuFont );
+    fileMenu.setFont( mainFont );
     fileMenu.setForeground( Color.white );
     menuBar.add( fileMenu );
 
@@ -374,7 +379,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Save File As", KeyEvent.VK_A );
@@ -382,7 +387,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
 
@@ -391,7 +396,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
 
@@ -401,7 +406,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
 
@@ -411,7 +416,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
 
@@ -421,7 +426,7 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     fileMenu.add( menuItem );
 
 
@@ -430,14 +435,14 @@ public class MainWindow extends JFrame implements
     JMenu editMenu = new JMenu( "Edit" );
     editMenu.setMnemonic( KeyEvent.VK_E );
     editMenu.setForeground( Color.white );
-    editMenu.setFont( menuFont );
+    editMenu.setFont( mainFont );
     menuBar.add( editMenu );
 
     menuItem = new JMenuItem( "Copy" );
     menuItem.setMnemonic( KeyEvent.VK_C );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "EditCopy" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
@@ -446,7 +451,7 @@ public class MainWindow extends JFrame implements
     menuItem.setMnemonic( KeyEvent.VK_T );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "EditCut" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
@@ -455,21 +460,19 @@ public class MainWindow extends JFrame implements
     menuItem.setMnemonic( KeyEvent.VK_P );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "EditPaste" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
 
-/*
-    menuItem = new JMenuItem( "Select All" );
-    menuItem.setMnemonic( KeyEvent.VK_A );
+    menuItem = new JMenuItem( "Find" );
+    menuItem.setMnemonic( KeyEvent.VK_F );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
-    menuItem.setActionCommand( "EditSelectAll" );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "EditFind" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
-*/
 
 
     ///////////////////////
@@ -477,17 +480,46 @@ public class MainWindow extends JFrame implements
     JMenu projectMenu = new JMenu( "Project" );
     projectMenu.setMnemonic( KeyEvent.VK_P );
     projectMenu.setForeground( Color.white );
-    projectMenu.setFont( menuFont );
+    projectMenu.setFont( mainFont );
     menuBar.add( projectMenu );
 
     menuItem = new JMenuItem( "Set Current" );
     menuItem.setMnemonic( KeyEvent.VK_C );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "ProjectSetCurrent" );
     menuItem.addActionListener( this );
     projectMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Set Executable" );
+    menuItem.setMnemonic( KeyEvent.VK_X );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "ProjectSetExecutable" );
+    menuItem.addActionListener( this );
+    projectMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Run Executable" );
+    menuItem.setMnemonic( KeyEvent.VK_R );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "ProjectRunExecutable" );
+    menuItem.addActionListener( this );
+    projectMenu.add( menuItem );
+
+
+    menuItem = new JMenuItem( "Show Build Log" );
+    menuItem.setMnemonic( KeyEvent.VK_L );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "ProjectShowBuildLog" );
+    menuItem.addActionListener( this );
+    projectMenu.add( menuItem );
+
 
 
     ///////////////////////
@@ -495,7 +527,7 @@ public class MainWindow extends JFrame implements
     JMenu keyBoardMenu = new JMenu( "Keyboard" );
     keyBoardMenu.setMnemonic( KeyEvent.VK_K );
     keyBoardMenu.setForeground( Color.white );
-    keyBoardMenu.setFont( menuFont );
+    keyBoardMenu.setFont( mainFont );
     menuBar.add( keyBoardMenu );
 
     menuItem = new JMenuItem( "Next Tab" );
@@ -504,10 +536,9 @@ public class MainWindow extends JFrame implements
     menuItem.setAccelerator( KeyStroke.getKeyStroke(
                      KeyEvent.VK_T, ActionEvent.CTRL_MASK ));
 
-
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "KeyboardNextTab" );
     menuItem.addActionListener( this );
     keyBoardMenu.add( menuItem );
@@ -518,15 +549,24 @@ public class MainWindow extends JFrame implements
     JMenu helpMenu = new JMenu( "Help" );
     helpMenu.setMnemonic( KeyEvent.VK_H );
     helpMenu.setForeground( Color.white );
-    helpMenu.setFont( menuFont );
+    helpMenu.setFont( mainFont );
     menuBar.add( helpMenu );
 
     menuItem = new JMenuItem( "About" );
     menuItem.setMnemonic( KeyEvent.VK_A );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
-    menuItem.setFont( menuFont );
+    menuItem.setFont( mainFont );
     menuItem.setActionCommand( "HelpAbout" );
+    menuItem.addActionListener( this );
+    helpMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Show Non-ASCII" );
+    menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "HelpShowNonASCII" );
     menuItem.addActionListener( this );
     helpMenu.add( menuItem );
 
@@ -613,13 +653,12 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-/*
-    if( command == "EditSelectAll" )
+    if( command == "EditFind" )
       {
-      editSelectAll();
+      findText();
       return;
       }
-*/
+
 
     ///////////////
     // Project Menu:
@@ -629,10 +668,29 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-// =======
-// Build and run...
-// java.lang.Runtime
-// Runtime.exec( "Command" );
+    if( command == "ProjectSetExecutable" )
+      {
+      setProjectExecutable();
+      return;
+      }
+
+    if( command == "ProjectRunExecutable" )
+      {
+      String runFile = mApp.projectConfigFile.getString( "ExecutableFile" );
+      showStatus( "Running Exec File: " + runFile );
+
+      // java.lang.Runtime
+      Runtime.getRuntime().exec( runFile );
+      // Add an array of arguments.
+      // exec(String[] cmdarray)
+      return;
+      }
+
+    if( command == "ProjectShowBuildLog" )
+      {
+      showBuildLog();
+      return;
+      }
 
 
     ///////////////
@@ -648,6 +706,12 @@ public class MainWindow extends JFrame implements
     if( command == "HelpAbout" )
       {
       showAboutBox();
+      return;
+      }
+
+    if( command == "HelpShowNonASCII" )
+      {
+      showNonAsciiCharacters();
       return;
       }
 
@@ -675,7 +739,16 @@ public class MainWindow extends JFrame implements
   private void openFile()
     {
     final JFileChooser fc = new JFileChooser();
-    // fc.setCurrentDirectory()
+    try
+    {
+    File dir = new File( "c:\\Eric\\" );
+    fc.setCurrentDirectory( dir );
+    }
+    catch( Exception e )
+      {
+      showStatus( "Couldn't set the directory for the file chooser." );
+      showStatus( e.getMessage() );
+      }
 
     // FileFilter filter = new FileNameExtensionFilter( "Text file", "txt" );
     // fc.setFileFilter( filter );
@@ -684,9 +757,6 @@ public class MainWindow extends JFrame implements
     int returnVal = fc.showOpenDialog( this );
     if( returnVal != JFileChooser.APPROVE_OPTION )
       return;
-
-    // Save Dialog:
-    // int returnVal = fc.showSaveDialog(FileChooserDemo.this);
 
 
     // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
@@ -1192,10 +1262,10 @@ public class MainWindow extends JFrame implements
 
 
 
-/*
-  private void showNonAsciiToolStripMenuItem_Click(object sender, EventArgs e)
+
+  private void showNonAsciiCharacters()
     {
-    ///////////
+    /*
 
     Symbols:
         General Punctuation (2000206F)
@@ -1243,14 +1313,11 @@ public class MainWindow extends JFrame implements
      // &#147;
 
     // ShowStatus( " " );
-    //////////
+    */
 
-
-
-    int GetVal = 0x252F; // 0x201c;
-    ShowStatus( "Character: " + Char.ToString( (char)GetVal ));
+    int getVal = 0x252F;
+    showStatus( "Character: " + (char)getVal );
     }
-*/
 
 
 
@@ -1290,7 +1357,7 @@ public class MainWindow extends JFrame implements
     // fc.addChoosableFileFilter( filter );
     // fc.setFileFilter( filter );
 
-    int returnVal = fc.showOpenDialog( this );
+    int returnVal = fc.showSaveDialog( this );
     if( returnVal != JFileChooser.APPROVE_OPTION )
       return;
 
@@ -1335,98 +1402,102 @@ public class MainWindow extends JFrame implements
 
 
 
-/*
-  private void findToolStripMenuItem_Click(object sender, EventArgs e)
+  private void findText()
     {
-    int SelectedIndex = MainTabControl.SelectedIndex;
-    if( SelectedIndex >= TabPagesArray.Length )
-      {
-      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    if( SelectedIndex < 0 )
-      {
-      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    SearchForm SForm = new SearchForm();
-    // try
-    SForm.ShowDialog();
-    if( SForm.DialogResult == DialogResult.Cancel )
-      {
-      SForm.FreeEverything();
-      return;
-      }
-
-    SearchText = SForm.GetSearchText().Trim().ToLower();
-    SForm.FreeEverything();
-
-    if( SearchText.Length < 1 )
-      {
-      MessageBox.Show( "No search text entered.", MessageBoxTitle, MessageBoxButtons.OK );
-      return;
-      }
-
-    TextBox SelectedBox = TabPagesArray[SelectedIndex].MainTextBox;
-    if( SelectedBox == null )
+    try
+    {
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( selectedIndex < 1 )
       return;
 
-    // It has to have the focus in order to set
-    // SelectionStart.
-    SelectedBox.Select();
+    if( selectedIndex >= tabPagesArrayLast )
+      return;
 
-    SelectedBox.SelectionLength = 0;
-    int Start = SelectedBox.SelectionStart;
-    if( Start < 0 )
-      Start = 0;
+    // Object[] possibilities = {"ham", "spam", "yam"};
+    String sResult = (String)JOptionPane.showInputDialog(
+                    this,
+                    "Search for:",
+                    "Search For", // Dialog title.
+                    JOptionPane.PLAIN_MESSAGE,
+                    null, // icon,
+                    null, // possibilities,
+                    "" ); // The default value.
 
-    string TextS = SelectedBox.Text.ToLower();
-    int TextLength = TextS.Length;
-    for( int Count = Start; Count < TextLength; Count++ )
+    if( sResult == null )
+      return;
+
+    searchText = sResult.trim().toLowerCase();
+    if( searchText.length() < 1 )
+      return;
+
+    showStatus( "Search text: " + searchText );
+
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      return;
+
+    int start = selectedTextArea. getCaretPosition();
+    if( start < 0 )
+      start = 0;
+
+    String textS = selectedTextArea.getText().toLowerCase();
+    int textLength = textS.length();
+    for( int count = start; count < textLength; count++ )
       {
-      if( TextS[Count] == SearchText[0] )
+      if( textS.charAt( count ) == searchText.charAt( 0 ) )
         {
-        int Where = SearchTextMatches( Count, TextS, SearchText );
-        if( Where >= 0 )
+        int where = searchTextMatches( count,
+                                       textS,
+                                       searchText );
+        if( where >= 0 )
           {
-          // MessageBox.Show( "Found at: " + Where.ToString(), MessageBoxTitle, MessageBoxButtons.OK );
-          SelectedBox.Select();
-          SelectedBox.SelectionStart = Where;
-          SelectedBox.ScrollToCaret();
+          showStatus( "Found at: " + where );
+          selectedTextArea. setCaretPosition( where );
           return;
           }
         }
       }
 
-    MessageBox.Show( "Nothing found.", MessageBoxTitle, MessageBoxButtons.OK );
+    showStatus( "At the end of findText." );
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in findText()." );
+      showStatus( e.getMessage() );
+      }
     }
 
 
 
 
-  private int SearchTextMatches( int Position, string TextToSearch, string SearchText )
+
+  private int searchTextMatches( int position,
+                                 String textToSearch,
+                                 String searchText )
     {
-    int SLength = SearchText.Length;
-    if( SLength < 1 )
+    int sLength = searchText.length();
+    if( sLength < 1 )
       return -1;
 
-    if( (Position + SLength - 1) >= TextToSearch.Length )
+    if( (position + sLength - 1) >= textToSearch.length() )
       return -1;
 
-    for( int Count = 0; Count < SLength; Count++ )
+    for( int count = 0; count < sLength; count++ )
       {
-      if( SearchText[Count] != TextToSearch[Position + Count] )
+      if( searchText.charAt( count ) != textToSearch.
+                            charAt( position + count ) )
         return -1;
 
       }
 
-    return Position;
+    return position;
     }
 
 
 
+
+
+/*
   private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
     {
     int SelectedIndex = MainTabControl.SelectedIndex;
@@ -1488,84 +1559,91 @@ public class MainWindow extends JFrame implements
 
 
 
-/*
-  private void runWithoutDebuggingToolStripMenuItem_Click(object sender, EventArgs e)
+
+  private void showBuildLog()
     {
-    // FileName = Path.GetFileName( FileName );
-    // Path.GetDirectoryName();
+    clearStatus();
 
-    string FileName = ProjectConfigFile.GetString( "ExecutableFile" );
-    // MessageBox.Show( "FileName: " + FileName, MessageBoxTitle, MessageBoxButtons.OK );
+    String fileName = mApp.projectConfigFile.getString( "ProjectDirectory" );
+    fileName += "\\Build.log";
 
-    StartProgramOrFile( FileName );
+    showStatus( "Log file: " + fileName );
+    // BuildLog Log = new BuildLog( FileName, this );
+    // Log.ReadFromTextFile();
+
+    String fileS = FileUtility.readAsciiFileToString( mApp,
+                                                      fileName,
+                                                      false );
+
+    if( fileS == "" )
+      {
+      showStatus( "Nothing in the log file." );
+      return;
+      }
+
+    fileS = fileS.trim();
+    fileS = fileS + "\n";
+
+    StringBuilder sBuilder = new StringBuilder();
+    String[] lines = fileS.split( "\n" );
+    for( int count = 0; count < lines.length; count++ )
+      {
+      showStatus( lines[count] );
+      }
     }
 
 
 
-  private void showLogToolStripMenuItem_Click(object sender, EventArgs e)
+
+  private void setProjectExecutable()
     {
-    ClearStatus();
-
-    string FileName = ProjectConfigFile.GetString( "ProjectDirectory" );
-    if( File.Exists( FileName + "\\JavaBuild.log" ))
-      FileName += "\\JavaBuild.log";
-    else
-      FileName += "\\msbuild.log";
-
-    ShowStatus( "Log file: " + FileName );
-    BuildLog Log = new BuildLog( FileName, this );
-    Log.ReadFromTextFile();
-    }
-
-
-
-  private void setExecutableToolStripMenuItem_Click(object sender, EventArgs e)
+    try
     {
-    string FileToOpen = "";
+    final JFileChooser fc = new JFileChooser();
 
     try
     {
-    // Get this starting directory name from a confifiguration
-    // file or something.
-    FileToOpen = OpenFileNameDialog( "C:\\Eric", "*.*" );
-    if( FileToOpen.Length < 1 )
-      return;
-
-    // MessageBox.Show( "File to open: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
-
-    if( !File.Exists( FileToOpen ))
+    File dir = new File( "c:\\Eric\\" );
+    fc.setCurrentDirectory( dir );
+    }
+    catch( Exception e )
       {
-      MessageBox.Show( "The file does not exist: " + FileToOpen, MessageBoxTitle, MessageBoxButtons.OK );
-      return;
+      showStatus( "Couldn't set the directory for the file chooser." );
+      showStatus( e.getMessage() );
       }
 
-    string ExecFile = FileToOpen;
-    ProjectConfigFile.SetString( "ExecutableFile", ExecFile, true );
-    MessageBox.Show( "Exec File: " + ProjectConfigFile.GetString( "ExecutableFile" ), MessageBoxTitle, MessageBoxButtons.OK );
+    FileFilter filter = new FileNameExtensionFilter(
+                                      "Batch file", "bat" );
 
+    fc.setFileFilter( filter );
+
+    filter = new FileNameExtensionFilter(
+                                      "Executable", "exe" );
+
+    fc.addChoosableFileFilter( filter );
+
+    int returnVal = fc.showOpenDialog( this );
+    if( returnVal != JFileChooser.APPROVE_OPTION )
+      return;
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
+    // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
+    File file = fc.getSelectedFile();
+    String fileName = file.getName();
+    showStatus( "File name picked is: " + fileName );
+
+    String pathName = file.getPath();
+    showStatus( "Path name picked is: " + pathName );
+
+    mApp.projectConfigFile.setString( "ExecutableFile", pathName, true );
+    showStatus( "Exec File: " + mApp.projectConfigFile.getString( "ExecutableFile" ));
     }
-    catch( Exception Except )
+    catch( Exception e )
       {
-      ShowStatus( "Exception with naming exec file." );
-      ShowStatus( Except.Message );
+      showStatus( "Exception with naming exec file." );
+      showStatus( e.getMessage() );
       }
     }
-
-
-
-
-  private void runToolStripMenuItem_Click(object sender, EventArgs e)
-    {
-    // Nake a file that contains a list of the source
-    // code files used in the project.
-    // ProjectSource.txt
-    // Use the full path.  No searching for source
-    // files allowed.  They have to be explicitely
-    // listed in the file.
-    string FileName = "c:\\Eric\\CodeAnalysis\\bin\\Release\\CodeAnalysis.exe";
-    StartProgramOrFile( FileName );
-    }
-*/
 
 
 
@@ -1583,8 +1661,6 @@ public class MainWindow extends JFrame implements
       setTabbedTextArea( index );
       }
     }
-
-
 
 
 
