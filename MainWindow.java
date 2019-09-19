@@ -1,10 +1,9 @@
 // Copyright Eric Chauvin 2019.
 
 
-// Make a list of files to choose from?
-    // Object[] possibilities = {"ham", "spam", "yam"};
-//    String sResult = (String)JOptionPane.showInputDialog(
-
+// Disable drag?
+// Disable selecting with a mouse?
+// Disable word select by a click?  Or what?
 
 
 import javax.swing.JFrame;
@@ -113,10 +112,9 @@ public class MainWindow extends JFrame implements
     setLocationRelativeTo( null );
     setVisible( true );
 
+    showStatusTab();
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + MainApp.versionDate );
-    mainTabbedPane.setSelectedIndex( 0 );
-    setTabbedTextArea( 0 );
 
     setupTimer();
     }
@@ -284,6 +282,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Couldn't allocate a new array for the EditorTabPage array." );
       showStatus( e.getMessage() );
       return in;
@@ -474,6 +473,15 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
 
+    menuItem = new JMenuItem( "Find Next" );
+    menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "EditFindNext" );
+    menuItem.addActionListener( this );
+    editMenu.add( menuItem );
+
 
     ///////////////////////
     // Project Menu:
@@ -659,6 +667,12 @@ public class MainWindow extends JFrame implements
       return;
       }
 
+    if( command == "EditFindNext" )
+      {
+      findTextNext();
+      return;
+      }
+
 
     ///////////////
     // Project Menu:
@@ -718,6 +732,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Exception in actionPerformed()." );
       showStatus( e.getMessage() );
       }
@@ -746,6 +761,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Couldn't set the directory for the file chooser." );
       showStatus( e.getMessage() );
       }
@@ -821,13 +837,24 @@ public class MainWindow extends JFrame implements
 
 
 
-  public void saveAllFiles()
+  private void showStatusTab()
     {
     if( tabPagesArrayLast < 1 )
       return;
 
     mainTabbedPane.setSelectedIndex( 0 );
     setTabbedTextArea( 0 );
+    }
+
+
+
+
+  private void saveAllFiles()
+    {
+    if( tabPagesArrayLast < 1 )
+      return;
+
+    showStatusTab();
 
     for( int count = 1; count < tabPagesArrayLast; count++ )
       {
@@ -889,9 +916,6 @@ public class MainWindow extends JFrame implements
       showStatus( e.getMessage() );
       }
     }
-
-
-
 
 
 
@@ -1407,20 +1431,21 @@ public class MainWindow extends JFrame implements
     try
     {
     int selectedIndex = mainTabbedPane.getSelectedIndex();
-    if( selectedIndex < 1 )
+    if( (selectedIndex < 1) ||
+        (selectedIndex >= tabPagesArrayLast))
+      {
+      showStatusTab();
+      showStatus( "No tab page selected." );
       return;
+      }
 
-    if( selectedIndex >= tabPagesArrayLast )
-      return;
-
-    // Object[] possibilities = {"ham", "spam", "yam"};
     String sResult = (String)JOptionPane.showInputDialog(
                     this,
                     "Search for:",
                     "Search For", // Dialog title.
                     JOptionPane.PLAIN_MESSAGE,
                     null, // icon,
-                    null, // possibilities,
+                    null, // possibilities to choose from.
                     "" ); // The default value.
 
     if( sResult == null )
@@ -1430,43 +1455,17 @@ public class MainWindow extends JFrame implements
     if( searchText.length() < 1 )
       return;
 
-    showStatus( "Search text: " + searchText );
+    // showStatus( "Search text: " + searchText );
 
-    JTextArea selectedTextArea = getSelectedTextArea();
-    if( selectedTextArea == null )
-      return;
-
-    int start = selectedTextArea. getCaretPosition();
-    if( start < 0 )
-      start = 0;
-
-    String textS = selectedTextArea.getText().toLowerCase();
-    int textLength = textS.length();
-    for( int count = start; count < textLength; count++ )
-      {
-      if( textS.charAt( count ) == searchText.charAt( 0 ) )
-        {
-        int where = searchTextMatches( count,
-                                       textS,
-                                       searchText );
-        if( where >= 0 )
-          {
-          showStatus( "Found at: " + where );
-          selectedTextArea. setCaretPosition( where );
-          return;
-          }
-        }
-      }
-
-    showStatus( "At the end of findText." );
+    findTextNext();
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Exception in findText()." );
       showStatus( e.getMessage() );
       }
     }
-
 
 
 
@@ -1496,66 +1495,68 @@ public class MainWindow extends JFrame implements
 
 
 
-
-/*
-  private void findNextToolStripMenuItem_Click(object sender, EventArgs e)
+  private void findTextNext()
     {
-    int SelectedIndex = MainTabControl.SelectedIndex;
-    if( SelectedIndex >= TabPagesArray.Length )
+    try
+    {
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( (selectedIndex < 1) ||
+        (selectedIndex >= tabPagesArrayLast ))
       {
-      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      showStatusTab();
+      showStatus( "No tab page selected." );
       return;
       }
 
-    if( SelectedIndex < 0 )
+    if( searchText.length() < 1 )
       {
-      MessageBox.Show( "No text box selected.", MessageBoxTitle, MessageBoxButtons.OK );
+      showStatusTab();
+      showStatus( "There is no searchText." );
       return;
       }
 
-    // SearchText = SForm.GetSearchText().Trim().ToLower();
-    if( SearchText.Length < 1 )
+    // showStatus( "Search text: " + searchText );
+
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
       {
-      MessageBox.Show( "No search text entered.", MessageBoxTitle, MessageBoxButtons.OK );
+      showStatusTab();
+      showStatus( "No text area selected." );
       return;
       }
 
-    TextBox SelectedBox = TabPagesArray[SelectedIndex].MainTextBox;
-    if( SelectedBox == null )
-      return;
+    int start = selectedTextArea. getCaretPosition();
+    if( start < 0 )
+      start = 0;
 
-    // It has to have the focus in order to set
-    // SelectionStart.
-    SelectedBox.Select();
-
-    SelectedBox.SelectionLength = 0;
-    int Start = SelectedBox.SelectionStart;
-    if( Start < 0 )
-      Start = 0;
-
-    Start = Start + SearchText.Length;
-
-    string TextS = SelectedBox.Text.ToLower();
-    int TextLength = TextS.Length;
-    for( int Count = Start; Count < TextLength; Count++ )
+    String textS = selectedTextArea.getText().toLowerCase();
+    int textLength = textS.length();
+    for( int count = start; count < textLength; count++ )
       {
-      if( TextS[Count] == SearchText[0] )
+      if( textS.charAt( count ) == searchText.charAt( 0 ) )
         {
-        int Where = SearchTextMatches( Count, TextS, SearchText );
-        if( Where >= 0 )
+        int where = searchTextMatches( count,
+                                       textS,
+                                       searchText );
+        if( where >= 0 )
           {
-          // MessageBox.Show( "Found at: " + Where.ToString(), MessageBoxTitle, MessageBoxButtons.OK );
-          SelectedBox.Select();
-          SelectedBox.SelectionStart = Where;
-          SelectedBox.ScrollToCaret();
+          // showStatus( "Found at: " + where );
+          selectedTextArea. setCaretPosition( where );
           return;
           }
         }
       }
 
-    MessageBox.Show( "Nothing found.", MessageBoxTitle, MessageBoxButtons.OK );
+    showStatusTab();
+    showStatus( "Nothing found." );
     }
-*/
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Exception in findTextNext()." );
+      showStatus( e.getMessage() );
+      }
+    }
 
 
 
@@ -1640,6 +1641,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Exception with naming exec file." );
       showStatus( e.getMessage() );
       }
