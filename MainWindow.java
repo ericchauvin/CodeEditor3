@@ -1,10 +1,6 @@
 // Copyright Eric Chauvin 2019.
 
 
-// Disable drag?
-// Disable selecting with a mouse?
-// Disable word select by a click?  Or what?
-
 
 import javax.swing.JFrame;
 import java.awt.event.WindowEvent;
@@ -42,7 +38,6 @@ import javax.swing.Timer;
 
 
 
-
 // black, blue, cyan, darkGray, gray, green, lightGray,
 // magenta, orange, pink, red, white, yellow.
 
@@ -71,6 +66,8 @@ public class MainWindow extends JFrame implements
   private final int maximumTabsOpen = 30;
   private Timer keyboardTimer;
   private boolean windowIsClosing = false;
+  private Process buildProcess = null;
+  private int buildTimerCount = 0;
 
 
 
@@ -315,6 +312,8 @@ public class MainWindow extends JFrame implements
     else
       textArea1 = textAreaToUse;
 
+    textArea1.setDragEnabled( false );
+
     textArea1.setFont( mainFont );
     textArea1.setLineWrap( false );
     // textArea1.setWrapStyleWord( true );
@@ -491,7 +490,7 @@ public class MainWindow extends JFrame implements
     projectMenu.setFont( mainFont );
     menuBar.add( projectMenu );
 
-    menuItem = new JMenuItem( "Set Current" );
+    menuItem = new JMenuItem( "Set Current Project" );
     menuItem.setMnemonic( KeyEvent.VK_C );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
@@ -518,6 +517,23 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     projectMenu.add( menuItem );
 
+    menuItem = new JMenuItem( "Set Build File" );
+    menuItem.setMnemonic( KeyEvent.VK_U );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "ProjectSetBuildFile" );
+    menuItem.addActionListener( this );
+    projectMenu.add( menuItem );
+
+    menuItem = new JMenuItem( "Build" );
+    menuItem.setMnemonic( KeyEvent.VK_B );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "ProjectRunBuildFile" );
+    menuItem.addActionListener( this );
+    projectMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Show Build Log" );
     menuItem.setMnemonic( KeyEvent.VK_L );
@@ -589,7 +605,6 @@ public class MainWindow extends JFrame implements
     try
     {
     // String paramS = event.paramString();
-    // showStatus( "paramS: " + paramS );
 
     String command = event.getActionCommand();
 
@@ -599,7 +614,7 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-    showStatus( "ActionEvent Command is: " + command );
+    // showStatus( "ActionEvent Command is: " + command );
 
     //////////////
     // File Menu:
@@ -693,10 +708,24 @@ public class MainWindow extends JFrame implements
       String runFile = mApp.projectConfigFile.getString( "ExecutableFile" );
       showStatus( "Running Exec File: " + runFile );
 
+      // This doesn't keep the Process object returned
+      // by exec() like runBuildFile() does.
       // java.lang.Runtime
       Runtime.getRuntime().exec( runFile );
       // Add an array of arguments.
       // exec(String[] cmdarray)
+      return;
+      }
+
+    if( command == "ProjectSetBuildFile" )
+      {
+      setProjectBuildFile();
+      return;
+      }
+
+    if( command == "ProjectRunBuildFile" )
+      {
+      runBuildFile();
       return;
       }
 
@@ -734,6 +763,48 @@ public class MainWindow extends JFrame implements
       {
       showStatusTab();
       showStatus( "Exception in actionPerformed()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+  private void runBuildFile()
+    {
+    try
+    {
+    showStatusTab();
+
+    if( buildProcess != null )
+      {
+      showStatus( "The build file is already running." );
+      return;
+      }
+
+    String runFile = mApp.projectConfigFile.getString(
+                                          "BuildFile" );
+
+    showStatus( "Running Build File: " + runFile );
+
+    // java.lang.Runtime
+    // java.lang.ProcessBuilder
+    // java.lang.Process
+
+    buildTimerCount = 0;
+    buildProcess = Runtime.getRuntime().exec( runFile );
+    if( buildProcess == null )
+      {
+      showStatus( "exec() returned null for the Build Process." );
+      return;
+      }
+
+    showStatus( "Started Build File." );
+
+    }
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Exception in runBuildFile()." );
       showStatus( e.getMessage() );
       }
     }
@@ -930,6 +1001,34 @@ public class MainWindow extends JFrame implements
       {
       keyboardTimer.stop();
       return;
+      }
+
+    if( buildProcess != null )
+      {
+      boolean buildHasReturned = false;
+      try
+      {
+      int returnVal = buildProcess.exitValue();
+      buildHasReturned = true;
+      }
+      catch( IllegalThreadStateException e )
+        {
+        // Make sure there is no "pause" at the end
+        // of the batch file.
+        // It has not yet terminated.
+        buildTimerCount++;
+        if( (buildTimerCount % 4) == 1 )
+          showStatus( "Build process is running. " + buildTimerCount );
+
+        // Kill the process.
+        // buildProcess.destroy();
+        }
+
+      if( buildHasReturned )
+        {
+        buildProcess = null;
+        showBuildLog();
+        }
       }
 
     int selectedIndex = mainTabbedPane.getSelectedIndex();
@@ -1609,6 +1708,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Couldn't set the directory for the file chooser." );
       showStatus( e.getMessage() );
       }
@@ -1643,6 +1743,60 @@ public class MainWindow extends JFrame implements
       {
       showStatusTab();
       showStatus( "Exception with naming exec file." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+  private void setProjectBuildFile()
+    {
+    try
+    {
+    final JFileChooser fc = new JFileChooser();
+
+    try
+    {
+    File dir = new File( "c:\\Eric\\" );
+    fc.setCurrentDirectory( dir );
+    }
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Couldn't set the directory for the file chooser." );
+      showStatus( e.getMessage() );
+      }
+
+    FileFilter filter = new FileNameExtensionFilter(
+                                      "Batch file", "bat" );
+
+    fc.setFileFilter( filter );
+
+    filter = new FileNameExtensionFilter(
+                                      "Executable", "exe" );
+
+    fc.addChoosableFileFilter( filter );
+
+    int returnVal = fc.showOpenDialog( this );
+    if( returnVal != JFileChooser.APPROVE_OPTION )
+      return;
+
+    // https://docs.oracle.com/javase/7/docs/api/java/nio/file/package-summary.html
+    // https://docs.oracle.com/javase/7/docs/api/java/io/File.html
+    File file = fc.getSelectedFile();
+    String fileName = file.getName();
+    showStatus( "File name picked is: " + fileName );
+
+    String pathName = file.getPath();
+    showStatus( "Path name picked is: " + pathName );
+
+    mApp.projectConfigFile.setString( "BuildFile", pathName, true );
+    showStatus( "Build File: " + mApp.projectConfigFile.getString( "BuildFile" ));
+    }
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Exception with naming Build file." );
       showStatus( e.getMessage() );
       }
     }
