@@ -61,6 +61,7 @@ public class EditorTabPage
     }
 
 
+
   public void readFromTextFile()
     {
     try
@@ -78,14 +79,15 @@ public class EditorTabPage
       return;
       }
 
-    fileS = fileS.trim();
-    fileS = fileS + "\n";
+    // fileS = fileS.trim();
+    // fileS = fileS + "\n";
 
     StringBuilder sBuilder = new StringBuilder();
     String[] lines = fileS.split( "\n" );
     for( int count = 0; count < lines.length; count++ )
       {
-      String oneLine = StringsUtility.trimEnd( lines[count] );
+      // String oneLine = StringsUtility.trimEnd( lines[count] );
+      String oneLine = lines[count];
       sBuilder.append( oneLine + "\n" );
       }
 
@@ -100,7 +102,6 @@ public class EditorTabPage
       mApp.showStatus( e.getMessage() );
       }
     }
-
 
 
 
