@@ -14,7 +14,6 @@ public class EditorTabPage
   private String fileName = "";
   private String tabTitle = "";
   private JTextArea mainTextArea;
-  private int searchPosition = -1;
 
 
 
