@@ -97,22 +97,26 @@ public class MainWindow extends JFrame implements
 
     setupMenus();
 
-    openRecentFiles();
-
     addWindowListener( this );
     addWindowFocusListener( this );
     addWindowStateListener( this );
 
-    setShowProjectText();
-
     // Center it.
     setLocationRelativeTo( null );
     setVisible( true );
+    }
 
-    showStatusTab();
+
+  // Do this after the constructor has returned.
+  public void initialize()
+    {
     showStatus( "Programming by Eric Chauvin." );
     showStatus( "Version date: " + MainApp.versionDate );
 
+    openRecentFiles();
+
+    showStatusTab();
+    setShowProjectText();
     setupTimer();
     }
 
@@ -473,7 +477,7 @@ public class MainWindow extends JFrame implements
     editMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Find Next" );
-    menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setMnemonic( KeyEvent.VK_X );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -518,7 +522,7 @@ public class MainWindow extends JFrame implements
     projectMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Set Build File" );
-    menuItem.setMnemonic( KeyEvent.VK_U );
+    menuItem.setMnemonic( KeyEvent.VK_S );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -527,7 +531,7 @@ public class MainWindow extends JFrame implements
     projectMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Build" );
-    menuItem.setMnemonic( KeyEvent.VK_B );
+    menuItem.setMnemonic( KeyEvent.VK_U );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -586,7 +590,7 @@ public class MainWindow extends JFrame implements
     helpMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Show Non-ASCII" );
-    menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setMnemonic( KeyEvent.VK_A );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -1452,6 +1456,7 @@ public class MainWindow extends JFrame implements
     int selectedIndex = mainTabbedPane.getSelectedIndex();
     if( selectedIndex >= tabPagesArray.length )
       {
+      showStatusTab();
       showStatus( "The selected index is past the TabPagesArray length." );
       return;
       }
@@ -1459,6 +1464,7 @@ public class MainWindow extends JFrame implements
     // The status page is at zero.
     if( selectedIndex <= 0 )
       {
+      showStatusTab();
       showStatus( "There is no tab page selected, or the status page is selected. (Top.)" );
       return;
       }
@@ -1472,6 +1478,7 @@ public class MainWindow extends JFrame implements
     }
     catch( Exception e )
       {
+      showStatusTab();
       showStatus( "Couldn't set the directory for the file chooser." );
       showStatus( e.getMessage() );
       }
@@ -1492,15 +1499,12 @@ public class MainWindow extends JFrame implements
     String pathName = file.getPath();
     showStatus( "Path name picked is: " + pathName );
 
-    //  JOptionPane.showMessageDialog( this,
-    //             "The file should be a .txt file." );
-
     // if( file.exists())
 
     if( pathName.length() < 4 )
       {
-      JOptionPane.showMessageDialog( this,
-                 "Pick a file name." );
+      // JOptionPane.showMessageDialog( this,
+      //            "Pick a file name." );
 
       return;
       }
