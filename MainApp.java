@@ -14,7 +14,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "9/16/2019";
+  public static final String versionDate = "9/20/2019";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
@@ -83,6 +83,7 @@ public class MainApp implements Runnable
                              currentProjectFileName );
 
     mainWin = new MainWindow( this, "Code Editor" );
+    mainWin.initialize();
 
     showStatus( " " );
     showStatus( "argsArray length: " + length );
