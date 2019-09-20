@@ -2,15 +2,6 @@
 
 
 
-// String:
-// https://docs.oracle.com/javase/8/docs/api/java/lang/String.html
-
-// StringBuilder:
-// https://docs.oracle.com/javase/8/docs/api/java/lang/StringBuilder.html
-
-
-
-// array = String.getChars(
 
 // float a = Float.parseFloat( SomeString );
 
@@ -23,7 +14,13 @@
 
   public static String trimEnd( String in )
     {
+    if( in.trim() == "" )
+      return "";
+
     int max = in.length();
+    if( max == 1 )
+      return in;
+
     int markEnd = max;
     for( int count = max - 1; count >= 0; count-- )
       {
@@ -35,16 +32,11 @@
         }
       }
 
-    if( markEnd == 1 )
-      return "";
-
     if( markEnd == max )
       return in;
 
-    // The substring doesn't include the character at markEnd.
     return in.substring( 0, markEnd );
     }
-
 
 
 
@@ -57,7 +49,7 @@
   // This CRC function is translated from a magazine
   // article in Dr. Dobbs Journal.
   // By Bob Felice, June 17, 2007
-  // But this is my C# translation of what was in that
+  // But this is my translation of what was in that
   // article.  (It was written in C.)
   internal static uint GetCRC16( string InString )
     {
