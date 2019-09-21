@@ -2,6 +2,7 @@
 
 
 
+
 import javax.swing.JFrame;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -35,6 +36,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Timer;
+// import java.io.BufferedInputStream;
+import java.lang.ProcessBuilder.Redirect;
 
 
 
@@ -68,6 +71,8 @@ public class MainWindow extends JFrame implements
   private boolean windowIsClosing = false;
   private Process buildProcess = null;
   private int buildTimerCount = 0;
+  private int exeTimerCount = 0;
+  private Process executableProcess = null;
 
 
 
@@ -709,15 +714,7 @@ public class MainWindow extends JFrame implements
 
     if( command == "ProjectRunExecutable" )
       {
-      String runFile = mApp.projectConfigFile.getString( "ExecutableFile" );
-      showStatus( "Running Exec File: " + runFile );
-
-      // This doesn't keep the Process object returned
-      // by exec() like runBuildFile() does.
-      // java.lang.Runtime
-      Runtime.getRuntime().exec( runFile );
-      // Add an array of arguments.
-      // exec(String[] cmdarray)
+      runExecutableFile();
       return;
       }
 
@@ -809,6 +806,46 @@ public class MainWindow extends JFrame implements
       {
       showStatusTab();
       showStatus( "Exception in runBuildFile()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
+
+
+
+  private void runExecutableFile()
+    {
+    try
+    {
+    showStatusTab();
+
+    if( executableProcess != null )
+      {
+      showStatus( "The executable process is already running." );
+      return;
+      }
+
+    String runFile = mApp.projectConfigFile.getString(
+                                         "ExecutableFile" );
+    showStatus( "Running Exec File: " + runFile );
+
+    // java.lang.Runtime
+    // java.lang.ProcessBuilder
+    // java.lang.Process
+
+    ProcessBuilder pb = new ProcessBuilder( runFile,
+                                            "" );
+    // pb.directory(new File("myDir"));
+    File log = new File( "\\Eric\\CodeAnalysisCpp\\ATestLog.txt" );
+    pb.redirectErrorStream( true );
+    pb.redirectOutput( Redirect.appendTo( log ));
+    executableProcess = pb.start();
+    showStatus( "Started executable File." );
+    }
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Exception in runExecutableFile()." );
       showStatus( e.getMessage() );
       }
     }
@@ -993,6 +1030,135 @@ public class MainWindow extends JFrame implements
     }
 
 
+/*
+  private void readFromExecutableOutput()
+    {
+    try
+    {
+    if( executableInputStream == null )
+      return;
+
+    StringBuilder sBuilder = new StringBuilder();
+    int oneByte = 0;
+    for( int count = 0; count < 1000; count++ )
+      {
+      try
+      {
+      if( executableInputStream.available() < 1 )
+        break;
+
+      // This will block until it has something to read.
+      oneByte = executableInputStream.read();
+      }
+      catch( Exception e )
+        {
+        executableInputStream = null;
+        showStatus( "Exception while doing read() in readFromExecutableOutput()." );
+        showStatus( e.getMessage() );
+        }
+
+      if( oneByte < 0 )
+        break;
+
+      if( oneByte >= 127 )
+        {
+        showStatus( "The byte was >= 127." );
+        }
+
+      char oneChar = (char)oneByte;
+      if( oneChar != '\n' )
+        {
+        if( oneChar < ' ' )
+          {
+          oneChar = ' ';
+          showStatus( "oneChar was less than space." );
+          }
+        }
+
+      sBuilder.append( oneChar );
+      }
+
+    String toShow = sBuilder.toString();
+    if( toShow.length() > 0 )
+      showStatus( toShow );
+
+    }
+    catch( Exception e )
+      {
+      showStatus( "Exception in readFromExecutableOutput()." );
+      showStatus( e.getMessage() );
+      }
+    }
+*/
+
+
+
+
+  private void checkBuildProcess()
+    {
+    if( buildProcess == null )
+      return;
+
+    boolean buildHasReturned = false;
+    try
+    {
+    int returnVal = buildProcess.exitValue();
+    buildHasReturned = true;
+    }
+    catch( IllegalThreadStateException e )
+      {
+      // Make sure there is no "pause" at the end
+      // of the batch file.
+      // It has not yet terminated.
+      buildTimerCount++;
+      if( (buildTimerCount % 4) == 1 )
+        showStatus( "Build process is running. " + buildTimerCount );
+
+      // Kill the process.
+      // buildProcess.destroy();
+      }
+
+    if( buildHasReturned )
+      {
+      buildProcess = null;
+      showBuildLog();
+      }
+    }
+
+
+
+
+  private void checkExecutableProcess()
+    {
+    if( executableProcess == null )
+      return;
+
+    boolean hasReturned = false;
+    try
+    {
+    int returnVal = executableProcess.exitValue();
+    hasReturned = true;
+    }
+    catch( IllegalThreadStateException e )
+      {
+      // Make sure there is no "pause" at the end
+      // of the batch file.
+      // It has not yet terminated.
+      exeTimerCount++;
+      if( (exeTimerCount % 4) == 1 )
+        showStatus( "Executable process is running. " + exeTimerCount );
+
+      }
+
+    if( hasReturned )
+      {
+      executableProcess = null;
+      showStatus( "Executable has finished." );
+      showExeOutput();
+      }
+    }
+
+
 
   private void keyboardTimerEvent()
     {
@@ -1007,33 +1173,10 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-    if( buildProcess != null )
-      {
-      boolean buildHasReturned = false;
-      try
-      {
-      int returnVal = buildProcess.exitValue();
-      buildHasReturned = true;
-      }
-      catch( IllegalThreadStateException e )
-        {
-        // Make sure there is no "pause" at the end
-        // of the batch file.
-        // It has not yet terminated.
-        buildTimerCount++;
-        if( (buildTimerCount % 4) == 1 )
-          showStatus( "Build process is running. " + buildTimerCount );
+    checkBuildProcess();
+    checkExecutableProcess();
 
-        // Kill the process.
-        // buildProcess.destroy();
-        }
-
-      if( buildHasReturned )
-        {
-        buildProcess = null;
-        showBuildLog();
-        }
-      }
+    // readFromExecutableOutput();
 
     int selectedIndex = mainTabbedPane.getSelectedIndex();
 
@@ -1696,6 +1839,35 @@ public class MainWindow extends JFrame implements
       }
     }
 
+
+
+  private void showExeOutput()
+    {
+    clearStatus();
+
+    String fileName = mApp.projectConfigFile.getString( "ProjectDirectory" );
+    fileName += "\\ExeOut.txt";
+
+    String fileS = FileUtility.readAsciiFileToString( mApp,
+                                                      fileName,
+                                                      false );
+
+    if( fileS == "" )
+      {
+      showStatus( "Nothing in the exe out file." );
+      return;
+      }
+
+    fileS = fileS.trim();
+    fileS = fileS + "\n";
+
+    StringBuilder sBuilder = new StringBuilder();
+    String[] lines = fileS.split( "\n" );
+    for( int count = 0; count < lines.length; count++ )
+      {
+      showStatus( lines[count] );
+      }
+    }
 
 
 
