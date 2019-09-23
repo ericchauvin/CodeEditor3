@@ -836,9 +836,14 @@ public class MainWindow extends JFrame implements
     ProcessBuilder pb = new ProcessBuilder( runFile,
                                             "" );
     // pb.directory(new File("myDir"));
-    File log = new File( "\\Eric\\CodeAnalysisCpp\\ATestLog.txt" );
-    pb.redirectErrorStream( true );
-    pb.redirectOutput( Redirect.appendTo( log ));
+
+    // Make sure to redirect the executable's output within
+    // the RunApp.bat batch file.
+    // See the showExeOutput() function.
+
+    // File log = new File( "\\Eric\\CodeAnalysisCpp\\ATestLog.txt" );
+    // pb.redirectErrorStream( true );
+    // pb.redirectOutput( Redirect.appendTo( log ));
     executableProcess = pb.start();
     showStatus( "Started executable File." );
     }
@@ -1145,8 +1150,8 @@ public class MainWindow extends JFrame implements
       // of the batch file.
       // It has not yet terminated.
       exeTimerCount++;
-      if( (exeTimerCount % 4) == 1 )
-        showStatus( "Executable process is running. " + exeTimerCount );
+      // if( (exeTimerCount % 4) == 1 )
+        // showStatus( "Executable process is running. " + exeTimerCount );
 
       }
 
@@ -1214,8 +1219,8 @@ public class MainWindow extends JFrame implements
     line++;
 
     String showText = "Line: " + line +
-                    "     " + tabTitle +
-                    "      Proj: " + showProjectText;
+                    "   " + tabTitle +
+                    "    Proj: " + showProjectText;
 
     statusLabel.setText( showText );
 
