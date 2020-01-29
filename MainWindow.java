@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2019.
+// Copyright Eric Chauvin 2019 - 2020.
 
 
 
@@ -536,7 +536,7 @@ public class MainWindow extends JFrame implements
     projectMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Build" );
-    menuItem.setMnemonic( KeyEvent.VK_U );
+    menuItem.setMnemonic( KeyEvent.VK_B );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
