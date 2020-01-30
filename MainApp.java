@@ -85,12 +85,12 @@ public class MainApp implements Runnable
     mainWin = new MainWindow( this, "Code Editor" );
     mainWin.initialize();
 
-    showStatus( " " );
-    showStatus( "argsArray length: " + length );
-    for( int count = 0; count < length; count++ )
-      showStatus( argsArray[count] );
+    // showStatus( " " );
+    // showStatus( "argsArray length: " + length );
+    // for( int count = 0; count < length; count++ )
+      // showStatus( argsArray[count] );
 
-    showStatus( " " );
+    // showStatus( " " );
     }
 
 
