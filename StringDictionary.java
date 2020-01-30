@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2019.
+// Copyright Eric Chauvin 2019 - 2020.
 
 
 // An identifier name like Table is different from the
@@ -152,9 +152,9 @@ public class StringDictionary
     {
     try
     {
-    mApp.showStatus( "Sorting..." );
+    // mApp.showStatus( "Sorting..." );
     sort();
-    mApp.showStatus( "Finished sorting." );
+    // mApp.showStatus( "Finished sorting." );
 
     StringBuilder sBuilder = new StringBuilder();
 
@@ -163,7 +163,9 @@ public class StringDictionary
       if( lineArray[count] == null )
         continue;
 
-      sBuilder.append( lineArray[count].makeKeysValuesString() );
+      sBuilder.append( lineArray[count].
+                                makeKeysValuesString());
+
       }
 
     return sBuilder.toString();
