@@ -115,14 +115,13 @@ public class MainWindow extends JFrame implements
   // Do this after the constructor has returned.
   public void initialize()
     {
-    showStatus( "Programming by Eric Chauvin." );
-    showStatus( "Version date: " + MainApp.versionDate );
-
     openRecentFiles();
 
     showStatusTab();
     setShowProjectText();
     setupTimer();
+    showStatus( "Programming by Eric Chauvin." );
+    showStatus( "Version date: " + MainApp.versionDate );
     }
 
 
@@ -971,7 +970,7 @@ public class MainWindow extends JFrame implements
     if( tabPagesArrayLast < 1 )
       return;
 
-    showStatusTab();
+    // showStatusTab();
 
     for( int count = 1; count < tabPagesArrayLast; count++ )
       {
@@ -981,9 +980,9 @@ public class MainWindow extends JFrame implements
       mApp.projectConfigFile.setString( "RecentFile" + count, fileName, false );
       }
 
-    showStatus( "Saving project config file." );
+    // showStatus( "Saving project config file." );
     mApp.projectConfigFile.writeToTextFile();
-    showStatus( "Saving main config file." );
+    // showStatus( "Saving main config file." );
     mApp.mainConfigFile.writeToTextFile();
     showStatus( "Saved all files." );
     }
