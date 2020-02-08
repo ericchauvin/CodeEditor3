@@ -18,7 +18,7 @@ public class LayoutSimpleVertical implements LayoutManager
 
   public LayoutSimpleVertical()
     {
-    // 
+    //
     }
 
 
@@ -54,6 +54,22 @@ public class LayoutSimpleVertical implements LayoutManager
     targetSize.width = targetSize.width + insets.left + insets.right;
     targetSize.height = targetSize.height + insets.top + insets.bottom;
 
+    /*
+    Dimension minTargertSize = minimumLayoutSize( target );
+
+    if( targetSize.width < minTargertSize.width )
+      targetSize.width = minTargertSize.width;
+
+    if( targetSize.height < minTargertSize.height )
+      targetSize.height = minTargertSize.height;
+
+    if( targetSize.height < 20 )
+      targetSize.height = 20;
+
+    if( targetSize.width < 20 )
+      targetSize.width = 20;
+    */
+
     return targetSize;
     }
 
@@ -64,6 +80,21 @@ public class LayoutSimpleVertical implements LayoutManager
   public Dimension minimumLayoutSize( Container target )
     {
     return preferredLayoutSize( target );
+
+    /*
+    int fixedHeight = getFixedHeight( target );
+    int fixedWidth = 900; // getFixedWidth( target );
+
+    Dimension targetSize = new Dimension( fixedWidth,
+                                          fixedHeight );
+
+    Insets insets = target.getInsets();
+
+    targetSize.width = targetSize.width + insets.left + insets.right;
+    targetSize.height = targetSize.height + insets.top + insets.bottom;
+
+    return targetSize;
+    */
     }
 
 
@@ -140,5 +171,34 @@ public class LayoutSimpleVertical implements LayoutManager
 
 
 
+/*
+  // This is a vertical layout, so get the widest one.
+  private int getFixedWidth( Container target )
+    {
+    int howMany = 0;
+    int widest = 0;
+    int n = target.getComponentCount();
+    for( int i = 0; i < n; i++ )
+      {
+      Component c = target.getComponent( i );
+      // if( !c.isVisible() )
 
-}
+      // Dimension min = c.getMinimumSize();
+      Dimension pref = c.getPreferredSize();
+
+      int width = pref.width;
+      if( width >= FixedHeightMax )
+        continue;
+
+      if( width > widest )
+        {
+        widest = width;
+        }
+      }
+
+    return widest;
+    }
+*/
+
+
+  }
