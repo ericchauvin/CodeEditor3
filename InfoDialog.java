@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2019 - 2020.
+// Copyright Eric Chauvin 2020.
 
 
 
@@ -28,6 +28,7 @@ class InfoDialog extends JDialog
   // serializable.
   public static final long serialVersionUID = 1;
   private MainApp mApp;
+  private Font mainFont;
   private JTextField textField;
 
 
@@ -41,14 +42,12 @@ class InfoDialog extends JDialog
     super( useFrame, true );
 
     mApp = useApp;
-
-    setTitle( "Test info" );
-
+    mainFont = useFont;
     textField = new JTextField( 10 );
-
     addComponents( getContentPane() );
+    // setContentPane( );
 
-    // setContentPane( optionPane );
+    setTitle( "Information" );
 
     setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
     // DISPOSE_ON_CLOSE, DO_NOTHING_ON_CLOSE, EXIT_ON_CLOSE
@@ -83,7 +82,7 @@ class InfoDialog extends JDialog
     {
     // pane.setBackground( Color.red );
     // pane.setForeground( Color.red );
-    pane.setLayout( new LayoutSimpleVertical());
+    // pane.setLayout( new LayoutSimpleVertical());
 
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout( new LayoutSimpleVertical());
@@ -93,6 +92,16 @@ class InfoDialog extends JDialog
     // new Dimension( Width, Height );
     mainPanel.setPreferredSize( new Dimension(
                    1, LayoutSimpleVertical.FixedHeightMax ));
+
+
+    textField.setFont( mainFont );
+
+    textField.setBackground( Color.black );
+    textField.setForeground( Color.white );
+
+    
+
+    mainPanel.add( textField );
 
     pane.add( mainPanel );
 
