@@ -14,10 +14,14 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
-import javax.swing.JTextField;
+// For a single line of text.
+// import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.JPanel;
+import javax.swing.JButton;
 
 
 
@@ -29,23 +33,28 @@ class InfoDialog extends JDialog
   public static final long serialVersionUID = 1;
   private MainApp mApp;
   private Font mainFont;
-  private JTextField textField;
-
+  private JTextArea textArea;
+  private JButton okButton;
+  private String showText;
 
 
 
   public InfoDialog( Frame useFrame,
                      MainApp useApp,
                      Font useFont,
-                     String useshowText )
+                     String useShowText,
+                     int width,
+                     int height )
     {
     super( useFrame, true );
 
     mApp = useApp;
     mainFont = useFont;
-    textField = new JTextField( 10 );
+    showText = useShowText;
     addComponents( getContentPane() );
     // setContentPane( );
+
+    setSize( width, height );
 
     setTitle( "Information" );
 
@@ -64,15 +73,12 @@ class InfoDialog extends JDialog
       {
       public void componentShown( ComponentEvent ce )
         {
-        textField.requestFocusInWindow();
+        okButton.requestFocusInWindow();
         }
       });
 
-    textField.addActionListener( this );
-
     // Center it.
     setLocationRelativeTo( null );
-
     }
 
 
@@ -94,18 +100,25 @@ class InfoDialog extends JDialog
                    1, LayoutSimpleVertical.FixedHeightMax ));
 
 
-    textField.setFont( mainFont );
+    textArea = new JTextArea( showText + "\n" );
+    textArea.setFont( mainFont );
+    textArea.setBackground( Color.black );
+    textArea.setForeground( Color.white );
+    textArea.setLineWrap( true );
+    textArea.setWrapStyleWord( true );
 
-    textField.setBackground( Color.black );
-    textField.setForeground( Color.white );
+    mainPanel.add( textArea );
 
-    
-
-    mainPanel.add( textField );
+    okButton = new JButton( "OK" );
+    okButton.setMnemonic( KeyEvent.VK_O );
+    okButton.setActionCommand( "OkButton" );
+    okButton.addActionListener( this );
+    okButton.setFont( mainFont );
+    okButton.setBackground( Color.black );
+    okButton.setForeground( Color.white );
+    mainPanel.add( okButton );
 
     pane.add( mainPanel );
-
-
     }
 
 
@@ -113,12 +126,16 @@ class InfoDialog extends JDialog
   public static void showInfo( Frame useFrame,
                                MainApp useApp,
                                Font useFont,
-                               String showText )
+                               String showText,
+                               int width,
+                               int height )
     {
     InfoDialog infoD = new InfoDialog( useFrame,
                                        useApp,
                                        useFont,
-                                       showText );
+                                       showText,
+                                       width,
+                                       height );
 
     infoD.setVisible( true );
     useApp.showStatus( "Before dispose." );
@@ -127,31 +144,38 @@ class InfoDialog extends JDialog
 
 
 
-/*
-  public String getValidatedText()
+
+  public void actionPerformed( ActionEvent event )
     {
-    return typedText;
-    }
-*/
-
-
-
-  public void actionPerformed( ActionEvent e )
+    try
     {
-    mApp.showStatus( "Action performed." );
-    // optionPane.setValue( btnString1 );
+    // String paramS = event.paramString();
+
+    String command = event.getActionCommand();
+
+    if( command == null )
+      {
+      // keyboardTimerEvent();
+      return;
+      }
+
+    mApp.showStatus( "ActionEvent Command is: " + command );
+
+    if( command == "OkButton" )
+      {
+      mApp.showStatus( "okButton was clicked." );
+      return;
+      }
+
+    }
+    catch( Exception e )
+      {
+      mApp.showStatus( "Exception in actionPerformed()." );
+      mApp.showStatus( e.getMessage() );
+      }
     }
 
 
-
-
-/*
-  public void clearAndHide()
-    {
-    textField.setText( null );
-    setVisible( false );
-    }
-*/
 
 
   }
