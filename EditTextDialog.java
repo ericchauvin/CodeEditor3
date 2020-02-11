@@ -112,6 +112,7 @@ class EditTextDialog extends JDialog
 
     mainPanel.add( textField );
 
+/*
     okButton = new JButton( "OK" );
     okButton.setMnemonic( KeyEvent.VK_O );
     okButton.setActionCommand( "OkButton" );
@@ -121,6 +122,7 @@ class EditTextDialog extends JDialog
     okButton.setBackground( Color.black );
     okButton.setForeground( Color.white );
     mainPanel.add( okButton );
+*/
 
     pane.add( mainPanel );
     }
@@ -150,7 +152,7 @@ class EditTextDialog extends JDialog
       return;
       }
 
-    mApp.showStatus( "ActionEvent Command is: " + command );
+    // mApp.showStatus( "ActionEvent Command is: " + command );
 
     if( command == "OkButton" )
       {
@@ -161,7 +163,7 @@ class EditTextDialog extends JDialog
 
     if( command == "TextFieldEnter" )
       {
-      mApp.showStatus( "Enter was pressed." );
+      // mApp.showStatus( "Enter was pressed." );
       setVisible( false );
       return;
       }
