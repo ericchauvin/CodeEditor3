@@ -2,7 +2,7 @@
 
 
 
-
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Font;
 import java.awt.Color;
@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.BoxLayout;
 
 
 
@@ -49,7 +50,8 @@ class EditTextDialog extends JDialog
     addComponents( getContentPane() );
     // setContentPane( );
 
-    setSize( 400, 300 );
+    // setSize( 400, 300 );
+    pack();
 
     setTitle( "Enter Text" );
 
@@ -68,7 +70,7 @@ class EditTextDialog extends JDialog
       {
       public void componentShown( ComponentEvent ce )
         {
-        okButton.requestFocusInWindow();
+        textField.requestFocusInWindow();
         }
       });
 
@@ -84,11 +86,17 @@ class EditTextDialog extends JDialog
     pane.setBackground( Color.green );
     // pane.setForeground( Color.red );
 
-    JPanel mainPanel = new JPanel();
-    mainPanel.setLayout( new LayoutSimpleVertical());
-    mainPanel.setBackground( Color.red );
+    // The default layout manager for a JPanel is
+    // FlowLayout.  But it's left to right.
 
-    JLabel label = new JLabel( "Enter text:" );
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout( new BoxLayout( mainPanel,
+                                  BoxLayout.PAGE_AXIS ));
+                                     // LINE_AXIS
+
+    mainPanel.setBackground( Color.black );
+
+    JLabel label = new JLabel( "Enter text:               " );
     label.setFont( mainFont );
     label.setBackground( Color.black );
     label.setForeground( Color.white );
@@ -100,6 +108,7 @@ class EditTextDialog extends JDialog
     textField.setBackground( Color.black );
     textField.setForeground( Color.white );
     textField.setActionCommand( "TextFieldEnter" );
+    textField.addActionListener( this );
 
     mainPanel.add( textField );
 
@@ -107,6 +116,7 @@ class EditTextDialog extends JDialog
     okButton.setMnemonic( KeyEvent.VK_O );
     okButton.setActionCommand( "OkButton" );
     okButton.addActionListener( this );
+    // okButton.setAlignmentX( Component.CENTER_ALIGNMENT );
     okButton.setFont( mainFont );
     okButton.setBackground( Color.black );
     okButton.setForeground( Color.white );
@@ -135,6 +145,7 @@ class EditTextDialog extends JDialog
 
     if( command == null )
       {
+      mApp.showStatus( "ActionEvent Command is null." );
       // keyboardTimerEvent();
       return;
       }
@@ -144,6 +155,13 @@ class EditTextDialog extends JDialog
     if( command == "OkButton" )
       {
       mApp.showStatus( "okButton was clicked." );
+      setVisible( false );
+      return;
+      }
+
+    if( command == "TextFieldEnter" )
+      {
+      mApp.showStatus( "Enter was pressed." );
       setVisible( false );
       return;
       }
@@ -160,4 +178,3 @@ class EditTextDialog extends JDialog
 
 
   }
-
