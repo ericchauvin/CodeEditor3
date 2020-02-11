@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2019.
+// Copyright Eric Chauvin 2019 - 2020.
 
 
 
@@ -15,9 +15,9 @@ import java.nio.file.Paths;
   public class FileUtility
   {
 
-  public static String readAsciiFileToString( MainApp mApp,
-                                              String fileName,
-                                              boolean keepTabs )
+  public static String readFileToString( MainApp mApp,
+                                         String fileName,
+                                         boolean keepTabs )
     {
     try
     {
@@ -37,6 +37,7 @@ import java.nio.file.Paths;
     // using a particular character set, but this tests it
     // to make sure it doesn't have bad data in it.
 
+    int nonAsciiCount = 0;
     short newline = (short)'\n';
     short space = (short)' ';
     short tab = (short)'\t';
@@ -52,8 +53,11 @@ import java.nio.file.Paths;
 
         }
 
-      if( sChar > 127 )
-        continue; // Don't want this character.
+      if( sChar > 126 )
+        {
+        nonAsciiCount++;
+        sChar = 0x2700; // Mark this as non-ASCII.
+        }
 
       if( sChar < space )
         {
@@ -66,7 +70,12 @@ import java.nio.file.Paths;
       sBuilder.append( (char)sChar );
       }
 
-    return sBuilder.toString();
+    String resultS = sBuilder.toString();
+    if( nonAsciiCount == 0 )
+      return resultS;
+    else
+      return "**** Non-ASCII *****\n" + resultS;
+
     }
     catch( Exception e )
       {
@@ -80,9 +89,9 @@ import java.nio.file.Paths;
 
 
   public static void writeAsciiStringToFile( MainApp mApp,
-                                             String fileName,
-                                             String textS,
-                                             boolean keepTabs )
+                                        String fileName,
+                                        String textS,
+                                        boolean keepTabs )
     {
     try
     {
@@ -102,8 +111,16 @@ import java.nio.file.Paths;
     for( int count = 0; count < max; count++ )
       {
       char sChar = textS.charAt( count );
-      if( sChar > 127 )
+
+      if( sChar > 126 )
         continue;
+
+        /*
+        {
+        nonAsciiCount++;
+        sChar = 0x2700; // Mark this as non-ASCII.
+        }
+        */
 
       if( !keepTabs )
         {
