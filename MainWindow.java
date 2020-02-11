@@ -10,7 +10,6 @@ import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowStateListener;
 import java.awt.Container;
 // import java.awt.Insets;
-// import javax.swing.JButton;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -206,7 +205,7 @@ public class MainWindow extends JFrame implements
     // stretchable.
     // new Dimension( Width, Height );
     mainPanel.setPreferredSize( new Dimension(
-                   1, LayoutSimpleVertical.FixedHeightMax ));
+                   100, LayoutSimpleVertical.FixedHeightMax ));
 
     pane.add( mainPanel );
 
@@ -594,7 +593,7 @@ public class MainWindow extends JFrame implements
     helpMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Show Non-ASCII" );
-    menuItem.setMnemonic( KeyEvent.VK_A );
+    menuItem.setMnemonic( KeyEvent.VK_N );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -1329,10 +1328,22 @@ public class MainWindow extends JFrame implements
 
   private void showAboutBox()
     {
-    JOptionPane.showMessageDialog( this,
-                 "Programming by Eric Chauvin.  Version date: " + MainApp.versionDate );
+    showStatus( "Before the dialog." );
 
+    String showS = "Programming by Eric Chauvin." +
+                   "  Version date: " +
+                   MainApp.versionDate;
+
+    InfoDialog.showInfo( this,
+                         mApp,
+                         mainFont,
+                         showS,
+                         400, // width
+                         350 ); // height
+
+    showStatus( "After the dialog." );
     }
+
 
 
 
@@ -1676,6 +1687,24 @@ public class MainWindow extends JFrame implements
 
 
 
+
+  private String showEditTextDialog()
+    {
+    EditTextDialog editD = new EditTextDialog( this,
+                                       mApp,
+                                       mainFont );
+
+    editD.setVisible( true );
+    String gotText = editD.getText();
+    showStatus( "gotText: " + gotText );
+    showStatus( "Before dispose." );
+    editD.dispose();
+    showStatus( "After dispose() was called." );
+    return gotText;
+    }
+
+
+
   private void findText()
     {
     try
@@ -1689,19 +1718,13 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-    String sResult = (String)JOptionPane.showInputDialog(
-                    this,
-                    "Search for:",
-                    "Search For", // Dialog title.
-                    JOptionPane.PLAIN_MESSAGE,
-                    null, // icon,
-                    null, // possibilities to choose from.
-                    "" ); // The default value.
+    String editedText = showEditTextDialog();
+    showStatus( "EditedText: " + editedText );
 
-    if( sResult == null )
+    if( editedText == null )
       return;
 
-    searchText = sResult.trim().toLowerCase();
+    searchText = editedText.trim().toLowerCase();
     if( searchText.length() < 1 )
       return;
 
