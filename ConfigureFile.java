@@ -57,9 +57,9 @@ public class ConfigureFile
     {
     strDictionary.clear();
 
-    String fileS = FileUtility.readAsciiFileToString( mApp,
-                                                      fileName,
-                                                      true );
+    String fileS = FileUtility.readFileToString( mApp,
+                                                 fileName,
+                                                 true );
 
     if( fileS.length() < 2 )
       return;
