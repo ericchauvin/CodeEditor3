@@ -17,8 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.JDialog;
 import javax.swing.WindowConstants;
-// For a single line of text.
-// import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -53,6 +51,9 @@ class InfoDialog extends JDialog
     showText = useShowText;
     addComponents( getContentPane() );
     // setContentPane( );
+
+    // Make it so that pressing Enter clicks the OK button.
+    getRootPane().setDefaultButton( okButton );
 
     setSize( width, height );
 
@@ -93,7 +94,7 @@ class InfoDialog extends JDialog
     mainPanel.setLayout( new LayoutSimpleVertical());
     mainPanel.setBackground( Color.red );
 
-    textArea = new JTextArea( showText + "\n" );
+    textArea = new JTextArea( showText );
     // Setting it to FixedHeightMax means this component is
     // stretchable.
     // new Dimension( Width, Height );
@@ -109,7 +110,7 @@ class InfoDialog extends JDialog
     mainPanel.add( textArea );
 
     okButton = new JButton( "OK" );
-    okButton.setMnemonic( KeyEvent.VK_O );
+    okButton.setMnemonic( KeyEvent.VK_O ); // VK_ENTER
     okButton.setActionCommand( "OkButton" );
     okButton.addActionListener( this );
     okButton.setFont( mainFont );
@@ -137,9 +138,9 @@ class InfoDialog extends JDialog
                                        height );
 
     infoD.setVisible( true );
-    useApp.showStatus( "Before dispose." );
+    // useApp.showStatus( "Before dispose." );
     infoD.dispose();
-    useApp.showStatus( "After dispose() was called." );
+    // useApp.showStatus( "After dispose() was called." );
     }
 
 
@@ -159,11 +160,11 @@ class InfoDialog extends JDialog
       return;
       }
 
-    mApp.showStatus( "ActionEvent Command is: " + command );
+    // mApp.showStatus( "ActionEvent Command is: " + command );
 
     if( command == "OkButton" )
       {
-      mApp.showStatus( "okButton was clicked." );
+      // mApp.showStatus( "okButton was clicked." );
       setVisible( false );
       return;
       }
