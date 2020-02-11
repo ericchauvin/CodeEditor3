@@ -86,21 +86,20 @@ class InfoDialog extends JDialog
 
   private void addComponents( Container pane )
     {
-    // pane.setBackground( Color.red );
+    pane.setBackground( Color.green );
     // pane.setForeground( Color.red );
-    // pane.setLayout( new LayoutSimpleVertical());
 
     JPanel mainPanel = new JPanel();
     mainPanel.setLayout( new LayoutSimpleVertical());
     mainPanel.setBackground( Color.red );
+
+    textArea = new JTextArea( showText + "\n" );
     // Setting it to FixedHeightMax means this component is
     // stretchable.
     // new Dimension( Width, Height );
-    mainPanel.setPreferredSize( new Dimension(
+    textArea.setPreferredSize( new Dimension(
                    1, LayoutSimpleVertical.FixedHeightMax ));
 
-
-    textArea = new JTextArea( showText + "\n" );
     textArea.setFont( mainFont );
     textArea.setBackground( Color.black );
     textArea.setForeground( Color.white );
@@ -140,6 +139,7 @@ class InfoDialog extends JDialog
     infoD.setVisible( true );
     useApp.showStatus( "Before dispose." );
     infoD.dispose();
+    useApp.showStatus( "After dispose() was called." );
     }
 
 
@@ -164,6 +164,7 @@ class InfoDialog extends JDialog
     if( command == "OkButton" )
       {
       mApp.showStatus( "okButton was clicked." );
+      setVisible( false );
       return;
       }
 
