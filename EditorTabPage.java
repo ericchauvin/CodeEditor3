@@ -1,4 +1,4 @@
-// Copyright Eric Chauvin 2019.
+// Copyright Eric Chauvin 2019 - 2020.
 
 
 
@@ -68,9 +68,9 @@ public class EditorTabPage
     if( fileName.length() < 1 )
       return;
 
-    String fileS = FileUtility.readAsciiFileToString( mApp,
-                                                      fileName,
-                                                      false );
+    String fileS = FileUtility.readFileToString( mApp,
+                                                 fileName,
+                                                 false );
 
     if( fileS == "" )
       {
