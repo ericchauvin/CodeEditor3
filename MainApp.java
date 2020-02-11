@@ -1,6 +1,9 @@
 // Copyright Eric Chauvin 2019.
 
 
+// =============
+// Have it remove the big comments.
+
 
 
 ///////////////////////////////
@@ -14,7 +17,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "1/30/2020";
+  public static final String versionDate = "2/11/2020";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
