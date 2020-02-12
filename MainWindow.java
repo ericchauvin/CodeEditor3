@@ -9,7 +9,6 @@ import java.awt.event.WindowListener;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowStateListener;
 import java.awt.Container;
-// import java.awt.Insets;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -35,7 +34,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Timer;
-// import java.io.BufferedInputStream;
 import java.lang.ProcessBuilder.Redirect;
 
 
@@ -488,6 +486,15 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
 
+    menuItem = new JMenuItem( "Remove Comments" );
+    menuItem.setMnemonic( KeyEvent.VK_R );
+    menuItem.setForeground( Color.white );
+    menuItem.setBackground( Color.black );
+    menuItem.setFont( mainFont );
+    menuItem.setActionCommand( "EditRemoveComments" );
+    menuItem.addActionListener( this );
+    editMenu.add( menuItem );
+
 
     ///////////////////////
     // Project Menu:
@@ -692,6 +699,12 @@ public class MainWindow extends JFrame implements
     if( command == "EditFindNext" )
       {
       findTextNext();
+      return;
+      }
+
+    if( command == "EditRemoveComments" )
+      {
+      removeStarComments();
       return;
       }
 
@@ -1328,8 +1341,6 @@ public class MainWindow extends JFrame implements
 
   private void showAboutBox()
     {
-    showStatus( "Before the dialog." );
-
     String showS = "Programming by Eric Chauvin." +
                    "  Version date: " +
                    MainApp.versionDate;
@@ -1341,7 +1352,6 @@ public class MainWindow extends JFrame implements
                          400, // width
                          350 ); // height
 
-    showStatus( "After the dialog." );
     }
 
 
@@ -1696,12 +1706,51 @@ public class MainWindow extends JFrame implements
 
     editD.setVisible( true );
     String gotText = editD.getText();
-    showStatus( "gotText: " + gotText );
-    showStatus( "Before dispose." );
+    // showStatus( "gotText: " + gotText );
+    // showStatus( "Before dispose." );
     editD.dispose();
-    showStatus( "After dispose() was called." );
+    // showStatus( "After dispose() was called." );
     return gotText;
     }
+
+
+
+
+  private void removeStarComments()
+    {
+    try
+    {
+    int selectedIndex = mainTabbedPane.getSelectedIndex();
+    if( (selectedIndex < 1) ||
+        (selectedIndex >= tabPagesArrayLast))
+      {
+      showStatusTab();
+      showStatus( "No tab page selected." );
+      return;
+      }
+
+    JTextArea selectedTextArea = getSelectedTextArea();
+    if( selectedTextArea == null )
+      {
+      showStatusTab();
+      showStatus( "No text area selected." );
+      return;
+      }
+
+    String textS = selectedTextArea.getText();
+    textS = RemoveStarComments.removeComments( mApp,
+                                               textS );
+
+    selectedTextArea.setText( textS );
+    }
+    catch( Exception e )
+      {
+      showStatusTab();
+      showStatus( "Exception in removeStarComments()." );
+      showStatus( e.getMessage() );
+      }
+    }
+
 
 
 
@@ -1719,7 +1768,7 @@ public class MainWindow extends JFrame implements
       }
 
     String editedText = showEditTextDialog();
-    showStatus( "EditedText: " + editedText );
+    // showStatus( "EditedText: " + editedText );
 
     if( editedText == null )
       return;
@@ -1845,7 +1894,7 @@ public class MainWindow extends JFrame implements
     // BuildLog Log = new BuildLog( FileName, this );
     // Log.ReadFromTextFile();
 
-    String fileS = FileUtility.readAsciiFileToString( mApp,
+    String fileS = FileUtility.readFileToString( mApp,
                                                       fileName,
                                                       false );
 
@@ -1875,9 +1924,9 @@ public class MainWindow extends JFrame implements
     String fileName = mApp.projectConfigFile.getString( "ProjectDirectory" );
     fileName += "\\ExeOut.txt";
 
-    String fileS = FileUtility.readAsciiFileToString( mApp,
-                                                      fileName,
-                                                      false );
+    String fileS = FileUtility.readFileToString( mApp,
+                                                 fileName,
+                                                 false );
 
     if( fileS == "" )
       {
