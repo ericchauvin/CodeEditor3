@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "2/12/2020";
+  public static final String versionDate = "2/13/2020";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
