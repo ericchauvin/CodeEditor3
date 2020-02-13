@@ -265,7 +265,8 @@ public class MainWindow extends JFrame implements
     statusTextArea = new JTextArea();
     addTextPane( statusTextArea,
                  "Stat",
-                 statusFileName );
+                 statusFileName,
+                 true );
 
     }
 
@@ -309,7 +310,8 @@ public class MainWindow extends JFrame implements
 
   private void addTextPane( JTextArea textAreaToUse,
                             String tabTitle,
-                            String fileName )
+                            String fileName,
+                            boolean wordWrap )
     {
     JTextArea textArea1;
     if( textAreaToUse == null )
@@ -320,8 +322,17 @@ public class MainWindow extends JFrame implements
     textArea1.setDragEnabled( false );
 
     textArea1.setFont( mainFont );
-    textArea1.setLineWrap( false );
-    // textArea1.setWrapStyleWord( true );
+
+    if( wordWrap )
+      {
+      textArea1.setLineWrap( true );
+      textArea1.setWrapStyleWord( true );
+      }
+    else
+      {
+      textArea1.setLineWrap( false );
+      }
+
     textArea1.setBackground( Color.black );
     textArea1.setForeground( Color.white );
     textArea1.setSelectedTextColor( Color.white );
@@ -478,7 +489,7 @@ public class MainWindow extends JFrame implements
     editMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Find Next" );
-    menuItem.setMnemonic( KeyEvent.VK_X );
+    menuItem.setMnemonic( KeyEvent.VK_N );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -871,7 +882,7 @@ public class MainWindow extends JFrame implements
 
   private void setupTimer()
     {
-    int delay = 250;
+    int delay = 100;
     keyboardTimer = new Timer( delay, this );
     keyboardTimer.start();
     }
@@ -920,7 +931,7 @@ public class MainWindow extends JFrame implements
       return;
       }
 
-    addTextPane( null, fileName, pathName );
+    addTextPane( null, fileName, pathName, false );
     }
 
 
@@ -953,7 +964,7 @@ public class MainWindow extends JFrame implements
       // String pathName = file.getPath();
       // showStatus( "Path name picked is: " + pathName );
 
-      addTextPane( null, tabTitle, fileName );
+      addTextPane( null, tabTitle, fileName, false );
       }
     }
     catch( Exception e )
@@ -2060,7 +2071,7 @@ public class MainWindow extends JFrame implements
     {
     String tabTitle = "No Name";
     String fileName = "";
-    addTextPane( null, tabTitle, fileName );
+    addTextPane( null, tabTitle, fileName, false );
 
     if( tabPagesArrayLast > 1 )
       {
