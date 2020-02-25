@@ -1598,16 +1598,17 @@ public class MainWindow extends JFrame implements
         Miscellaneous Mathematical Symbols-B (298029FF)
         Supplemental Mathematical Operators (2A002AFF)
         Miscellaneous Symbols and Arrows (2B002BFF)
+    */
 
-    // See the MarkersDelimiters.cs file.
-    // Don't exclude any characters in the Basic
-    // Multilingual Plane except these Dingbat characters
-    // which are used as markers or delimiters.
+    //    Dingbats (2700 27BF)
 
-    //    Dingbats (270027BF)
+    for( int count = 0x2700; count < 0x27BF; count++ )
+      {
+      int where = count - 0x2700;
+      showStatus( "" + where + ") " + Character.
+                                toString( (char)count ));
 
-    // for( int Count = 0x2700; Count < 0x27BF; Count++ )
-      // ShowStatus( Count.ToString( "X2" ) + ") " + Char.ToString( (char)Count ));
+      }
 
     // for( int Count = 128; Count < 256; Count++ )
       // ShowStatus( "      case (int)'" + Char.ToString( (char)Count ) + "': return " + Count.ToString( "X4" ) + ";" );
@@ -1619,10 +1620,9 @@ public class MainWindow extends JFrame implements
      // &#147;
 
     // ShowStatus( " " );
-    */
 
-    int getVal = 0x252F;
-    showStatus( "Character: " + (char)getVal );
+    // int getVal = 0x252F;
+    // showStatus( "Character: " + (char)getVal );
     }
 
 
