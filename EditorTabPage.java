@@ -42,6 +42,7 @@ public class EditorTabPage
     }
 
 
+
   public String getTabTitle()
     {
     return tabTitle;
@@ -112,10 +113,10 @@ public class EditorTabPage
     mApp.showStatus( "Saving: " + fileName );
     String outString = mainTextArea.getText();
 
-    FileUtility.writeAsciiStringToFile( mApp,
-                                        fileName,
-                                        outString,
-                                        false );
+    FileUtility.writeStringToFile( mApp,
+                                   fileName,
+                                   outString,
+                                   false );
 
     }
     catch( Exception e )
