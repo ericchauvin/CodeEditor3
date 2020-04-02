@@ -1,10 +1,8 @@
-// Copyright Eric Chauvin 2019.
+// Copyright Eric Chauvin 2019 - 2020.
 
 
 ///////////////////////////////
 // javax.media.j3d.Canvas3D
-// javax.vecmath.Matrix4d
-// Test against the Java matrix stuff.
 //////////////////////////////
 
 
@@ -14,7 +12,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "2/25/2020";
+  public static final String versionDate = "4/2/2020";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
