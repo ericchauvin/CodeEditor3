@@ -106,10 +106,10 @@ public class ConfigureFile
     if( fileStr.trim().length() < 1 )
       return;
 
-    FileUtility.writeAsciiStringToFile( mApp,
-                                        fileName,
-                                        fileStr,
-                                        true );
+    FileUtility.writeStringToFile( mApp,
+                                   fileName,
+                                   fileStr,
+                                   true );
 
     }
     catch( Exception e )
