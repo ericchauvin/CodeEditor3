@@ -932,6 +932,12 @@ public class MainWindow extends JFrame implements
       }
 
     addTextPane( null, fileName, pathName, false );
+    if( tabPagesArrayLast > 1 )
+      {
+      int index = tabPagesArrayLast - 1;
+      mainTabbedPane.setSelectedIndex( index );
+      setTabbedTextArea( index );
+      }
     }
 
 
@@ -1281,6 +1287,10 @@ public class MainWindow extends JFrame implements
       return;
 
     selectedTextArea.copy();
+
+    selectedTextArea.setSelectionEnd( selectedTextArea.
+                                    getSelectionStart());
+
     }
     catch( Exception e )
       {
