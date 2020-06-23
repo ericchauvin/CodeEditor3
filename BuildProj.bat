@@ -1,4 +1,3 @@
-
 rem @echo off
 
 rem Compile Java files.
@@ -18,16 +17,10 @@ rem The directory tree where these files are
 rem corresponds to their Jar package tree.
 
 rem Compile all of them.
+cd \Eric\CodeEditor3
 del *.class
-
-rem Make something to build these separately.
-rem Like system( "javac whatever" ).
-
-rem Javac -Xlint -Xstdout JavaBuild.log MainApp.java EditorTabPage.java LayoutSimpleVertical.java FileUtility.java StringsUtility.java MenuActions.java ConfigureFile.java StringDictionary.java StringDictionaryLine.java FileTree.java
-
 cls
-Javac -Xlint -Xstdout JavaBuild.log *.java
+Javac -Xlint -Xstdout Build.log *.java
 
-type JavaBuild.log
-
-pause
+type Build.log
+rem don't use pause
