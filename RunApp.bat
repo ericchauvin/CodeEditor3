@@ -1,17 +1,12 @@
-
 rem @echo off
 
-rem A newer version of the JRE made setting these
-rem unnecessary.
 rem SET JAVA_HOME="C:\Javajdk"
 rem SET JDK_HOME=%JAVA_HOME%
 rem SET JRE_HOME="C:\Javajdk\jre"
 
 rem SET CLASSPATH=".;%JAVA_HOME%\lib;%JAVA_HOME%\jre\lib
-rem SET PATH=%PATH%;%JAVA_HOME%\bin;
 
-cd \Eric\CodeEditorJava
+SET PATH=%PATH%;%JAVA_HOME%\bin;
 
-Java MainApp "\Eric\CodeEditorJava\\"
-
-rem pause
+cd \Eric\CodeEditor3
+Java MainApp "\Eric\CodeEditor3\"
