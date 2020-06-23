@@ -54,8 +54,8 @@ public class MainWindow extends JFrame implements
   public static final long serialVersionUID = 1;
   private MainApp mApp;
   private Font mainFont;
-  // private Font menuFont;
   private JTabbedPane mainTabbedPane;
+  private JPanel bottomPanel;
   private JLabel statusLabel;
   private JTextArea statusTextArea;
   private EditorTabPage[] tabPagesArray;
@@ -70,7 +70,7 @@ public class MainWindow extends JFrame implements
   private int buildTimerCount = 0;
   private int exeTimerCount = 0;
   private Process executableProcess = null;
-
+  private int showBlueCount = 100;
 
 
   private MainWindow()
@@ -79,16 +79,15 @@ public class MainWindow extends JFrame implements
 
 
 
-  public MainWindow( MainApp useApp, String showText )
+  public MainWindow( MainApp useApp, String title )
     {
-    super( showText );
+    super( title );
 
     mApp = useApp;
 
     tabPagesArray = new EditorTabPage[2];
 
     mainFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
-    // menuFont = new Font( Font.MONOSPACED, Font.PLAIN, 40 );
 
     setDefaultCloseOperation( WindowConstants.EXIT_ON_CLOSE );
 
@@ -207,9 +206,9 @@ public class MainWindow extends JFrame implements
 
     pane.add( mainPanel );
 
-    JPanel bottomPanel = new JPanel();
+    bottomPanel = new JPanel();
     bottomPanel.setLayout( new LayoutSimpleVertical());
-    bottomPanel.setBackground( Color.black );
+    bottomPanel.setBackground( Color.blue );
     bottomPanel.setPreferredSize( new Dimension( 1, 74 ));
     pane.add( bottomPanel );
 
@@ -405,7 +404,12 @@ public class MainWindow extends JFrame implements
     fileMenu.add( menuItem );
 
 
+
     menuItem = new JMenuItem( "Save All", KeyEvent.VK_L );
+    // ALT_MASK  CTRL_MASK  SHIFT_MASK
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_L, ActionEvent.CTRL_MASK ));
+
     menuItem.setActionCommand( "FileSaveAll" );
     menuItem.addActionListener( this );
     menuItem.setForeground( Color.white );
@@ -454,6 +458,9 @@ public class MainWindow extends JFrame implements
 
     menuItem = new JMenuItem( "Copy" );
     menuItem.setMnemonic( KeyEvent.VK_C );
+    // Can't use Control-C.
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_K, ActionEvent.CTRL_MASK ));
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -481,6 +488,8 @@ public class MainWindow extends JFrame implements
 
     menuItem = new JMenuItem( "Find" );
     menuItem.setMnemonic( KeyEvent.VK_F );
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_F, ActionEvent.CTRL_MASK ));
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -490,6 +499,9 @@ public class MainWindow extends JFrame implements
 
     menuItem = new JMenuItem( "Find Next" );
     menuItem.setMnemonic( KeyEvent.VK_N );
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_N, ActionEvent.CTRL_MASK ));
+
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -533,8 +545,10 @@ public class MainWindow extends JFrame implements
     menuItem.addActionListener( this );
     projectMenu.add( menuItem );
 
-    menuItem = new JMenuItem( "Run Executable" );
+    menuItem = new JMenuItem( "Run" );
     menuItem.setMnemonic( KeyEvent.VK_R );
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_R, ActionEvent.CTRL_MASK ));
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -553,6 +567,9 @@ public class MainWindow extends JFrame implements
 
     menuItem = new JMenuItem( "Build" );
     menuItem.setMnemonic( KeyEvent.VK_B );
+    menuItem.setAccelerator( KeyStroke.getKeyStroke(
+               KeyEvent.VK_B, ActionEvent.CTRL_MASK ));
+
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -583,7 +600,7 @@ public class MainWindow extends JFrame implements
     menuItem.setMnemonic( KeyEvent.VK_T );
     // ALT_MASK  CTRL_MASK  SHIFT_MASK
     menuItem.setAccelerator( KeyStroke.getKeyStroke(
-                     KeyEvent.VK_T, ActionEvent.CTRL_MASK ));
+              KeyEvent.VK_T, ActionEvent.CTRL_MASK ));
 
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
@@ -657,6 +674,9 @@ public class MainWindow extends JFrame implements
 
     if( command == "FileSaveAll" )
       {
+      bottomPanel.setBackground( Color.blue );
+      showBlueCount = 0;
+      // setTextAreasEditable( false );
       saveAllFiles();
       return;
       }
@@ -685,6 +705,7 @@ public class MainWindow extends JFrame implements
 
     if( command == "EditCopy" )
       {
+      // setTextAreasEditable( false );
       editCopy();
       return;
       }
@@ -1206,6 +1227,10 @@ public class MainWindow extends JFrame implements
       return;
       }
 
+    showBlueCount++;
+    if( showBlueCount == 15 )
+      bottomPanel.setBackground( Color.black );
+
     checkBuildProcess();
     checkExecutableProcess();
 
@@ -1260,6 +1285,19 @@ public class MainWindow extends JFrame implements
       showStatus( e.getMessage() );
       }
     }
+
+
+
+/*
+I would have to fix the cursor to make this work.
+  private void setTextAreasEditable( boolean setTo )
+    {
+    for( int count = 0; count < tabPagesArrayLast; count++ )
+      {
+      tabPagesArray[count].setEditable( setTo );
+      }
+    }
+*/
 
 
 
