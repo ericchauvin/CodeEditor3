@@ -1,9 +1,11 @@
 // Copyright Eric Chauvin 2019 - 2020.
 
 
-///////////////////////////////
-// javax.media.j3d.Canvas3D
-//////////////////////////////
+
+// Code Editor 3.
+
+
+
 
 
 import javax.swing.SwingUtilities;
@@ -12,7 +14,7 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "4/2/2020";
+  public static final String versionDate = "6/23/2020";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
@@ -51,10 +53,12 @@ public class MainApp implements Runnable
     {
     // checkSingleInstance()
 
-    String programDirectory = "\\Eric\\CodeEditorJava\\";
+    String programDirectory = "\\Eric\\CodeEditor3\\";
+/*
     int length = argsArray.length;
     if( length > 0 )
       programDirectory = argsArray[0];
+*/
 
     String mainConfigFileName = programDirectory +
                                       "MainConfigure.txt";
@@ -80,7 +84,7 @@ public class MainApp implements Runnable
     projectConfigFile = new ConfigureFile( this,
                              currentProjectFileName );
 
-    mainWin = new MainWindow( this, "Code Editor" );
+    mainWin = new MainWindow( this, "Code Editor 3" );
     mainWin.initialize();
 
     // showStatus( " " );
