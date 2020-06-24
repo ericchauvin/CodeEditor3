@@ -1227,8 +1227,9 @@ public class MainWindow extends JFrame implements
       return;
       }
 
+    // The keyboard timer is 100 milliseconds.
     showBlueCount++;
-    if( showBlueCount == 15 )
+    if( showBlueCount == 5 )
       bottomPanel.setBackground( Color.black );
 
     checkBuildProcess();
