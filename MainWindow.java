@@ -467,7 +467,7 @@ public class MainWindow extends JFrame implements
     menuItem.setActionCommand( "EditCopy" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
-
+/*
     menuItem = new JMenuItem( "Cut" );
     menuItem.setMnemonic( KeyEvent.VK_T );
     menuItem.setForeground( Color.white );
@@ -476,6 +476,7 @@ public class MainWindow extends JFrame implements
     menuItem.setActionCommand( "EditCut" );
     menuItem.addActionListener( this );
     editMenu.add( menuItem );
+*/
 
     menuItem = new JMenuItem( "Paste" );
     menuItem.setMnemonic( KeyEvent.VK_P );
@@ -510,7 +511,7 @@ public class MainWindow extends JFrame implements
     editMenu.add( menuItem );
 
     menuItem = new JMenuItem( "Remove Comments" );
-    menuItem.setMnemonic( KeyEvent.VK_R );
+    // menuItem.setMnemonic( KeyEvent.VK_R );
     menuItem.setForeground( Color.white );
     menuItem.setBackground( Color.black );
     menuItem.setFont( mainFont );
@@ -709,12 +710,13 @@ public class MainWindow extends JFrame implements
       editCopy();
       return;
       }
-
+/*
     if( command == "EditCut" )
       {
       editCut();
       return;
       }
+*/
 
     if( command == "EditPaste" )
       {
