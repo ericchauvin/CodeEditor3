@@ -8,5 +8,5 @@ rem SET CLASSPATH=".;%JAVA_HOME%\lib;%JAVA_HOME%\jre\lib
 
 SET PATH=%PATH%;%JAVA_HOME%\bin;
 
-cd \Eric\CodeEditor3
-Java MainApp "\Eric\CodeEditor3\"
+cd \EricMain\CodeEditor3
+Java MainApp "\EricMain\CodeEditor3"
