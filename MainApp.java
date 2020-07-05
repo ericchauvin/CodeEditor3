@@ -31,7 +31,7 @@ public class MainApp implements Runnable
 
 
 
-  public String getprogramDirectory()
+  public String getProgramDirectory()
     {
     return programDirectory;
     }
