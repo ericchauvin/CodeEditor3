@@ -17,7 +17,7 @@ rem The directory tree where these files are
 rem corresponds to their Jar package tree.
 
 rem Compile all of them.
-cd \Eric\CodeEditor3
+cd \EricMain\CodeEditor3
 del *.class
 cls
 Javac -Xlint -Xstdout Build.log *.java
