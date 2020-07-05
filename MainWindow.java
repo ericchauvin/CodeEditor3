@@ -918,7 +918,7 @@ public class MainWindow extends JFrame implements
     final JFileChooser fc = new JFileChooser();
     try
     {
-    File dir = new File( "c:\\Eric\\" );
+    File dir = new File( "c:\\" );
     fc.setCurrentDirectory( dir );
     }
     catch( Exception e )
@@ -1444,7 +1444,8 @@ I would have to fix the cursor to make this work.
     {
     String showS = mApp.projectConfigFile.getString( "ProjectDirectory" );
 
-    showS = showS.replace( "C:\\Eric\\", "" );
+    showS = showS.replace( mApp.getProgramDirectory() +
+                                         "\\", "" );
     showProjectText = showS;
     }
 
@@ -1461,7 +1462,7 @@ I would have to fix the cursor to make this work.
 
     try
     {
-    File dir = new File( "c:\\Eric\\" );
+    File dir = new File( "c:\\" );
     fc.setCurrentDirectory( dir );
     }
     catch( Exception e )
@@ -1703,7 +1704,7 @@ I would have to fix the cursor to make this work.
 
     try
     {
-    File dir = new File( "c:\\Eric\\" );
+    File dir = new File( "c:\\" );
     fc.setCurrentDirectory( dir );
     }
     catch( Exception e )
@@ -2017,7 +2018,7 @@ I would have to fix the cursor to make this work.
 
     try
     {
-    File dir = new File( "c:\\Eric\\" );
+    File dir = new File( "c:\\" );
     fc.setCurrentDirectory( dir );
     }
     catch( Exception e )
@@ -2071,7 +2072,7 @@ I would have to fix the cursor to make this work.
 
     try
     {
-    File dir = new File( "c:\\Eric\\" );
+    File dir = new File( "c:\\" );
     fc.setCurrentDirectory( dir );
     }
     catch( Exception e )
