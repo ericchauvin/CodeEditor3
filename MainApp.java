@@ -14,11 +14,12 @@ import javax.swing.SwingUtilities;
 
 public class MainApp implements Runnable
   {
-  public static final String versionDate = "7/1/2020";
+  public static final String versionDate = "7/5/2020";
   private MainWindow mainWin;
   public ConfigureFile mainConfigFile;
   public ConfigureFile projectConfigFile;
   private String[] argsArray;
+  private String programDirectory = "";
 
 
 
@@ -26,6 +27,13 @@ public class MainApp implements Runnable
     {
     MainApp mApp = new MainApp( args );
     SwingUtilities.invokeLater( mApp );
+    }
+
+
+
+  public String getprogramDirectory()
+    {
+    return programDirectory;
     }
 
 
@@ -53,30 +61,34 @@ public class MainApp implements Runnable
     {
     // checkSingleInstance()
 
-    String programDirectory = "\\Eric\\CodeEditor3\\";
-/*
+    // All programs need to have a batch file give
+    // it the program directory so they're not stuck
+    // in that directory.
+    programDirectory = "\\EricMain\\CodeEditor3";
+
     int length = argsArray.length;
     if( length > 0 )
       programDirectory = argsArray[0];
-*/
+
 
     String mainConfigFileName = programDirectory +
-                                      "MainConfigure.txt";
+                                  "\\MainConfigure.txt";
 
     mainConfigFile = new ConfigureFile( this,
                                 mainConfigFileName );
 
     String currentProjectFileName =
-            mainConfigFile.getString( "CurrentProjectFile" );
+            mainConfigFile.getString(
+                              "CurrentProjectFile" );
 
     if( currentProjectFileName.length() < 4 )
       {
       currentProjectFileName = programDirectory +
-                                     "ProjectOptions.txt";
+                               "\\ProjectOptions.txt";
 
       mainConfigFile.setString( "CurrentProjectFile",
-                                 currentProjectFileName,
-                                 true );
+                               currentProjectFileName,
+                               true );
 
       // mainConfigFile.writeToTextFile();
       }
@@ -87,12 +99,18 @@ public class MainApp implements Runnable
     mainWin = new MainWindow( this, "Code Editor 3" );
     mainWin.initialize();
 
-    // showStatus( " " );
-    // showStatus( "argsArray length: " + length );
-    // for( int count = 0; count < length; count++ )
-      // showStatus( argsArray[count] );
+    showStatus( " " );
+    showStatus( "currentProjectFileName:\n" +
+                          currentProjectFileName );
 
-    // showStatus( " " );
+    showStatus( " " );
+    showStatus( "argsArray length: " + length );
+    for( int count = 0; count < length; count++ )
+      showStatus( argsArray[count] );
+
+    showStatus( " " );
+    showStatus( "Program Directory:" );
+    showStatus( programDirectory );
     }
 
 
